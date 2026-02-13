@@ -1,3 +1,5 @@
+-- Database schema
+
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Main surveillance data (monthly uploads)
