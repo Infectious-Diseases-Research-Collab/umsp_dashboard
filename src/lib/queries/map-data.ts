@@ -6,6 +6,8 @@ export interface MapDataRow extends UmspMonthlyData {
   longitude: number;
 }
 
+const PAGE_SIZE = 1000;
+
 export async function fetchMapData(params: {
   regions?: string[];
   sites?: string[];
@@ -17,34 +19,57 @@ export async function fetchMapData(params: {
   const supabase = createClient();
 
   // Fetch coordinates
-  const { data: coords } = await supabase
-    .from('health_facility_coordinates')
-    .select('site, latitude, longitude');
-
-  const coordMap = new Map((coords ?? []).map((c) => [c.site, { lat: c.latitude, lng: c.longitude }]));
-
-  // Build monthly data query
-  let query = supabase.from('umsp_monthly_data').select('*');
-
-  if (params.regions && params.regions.length > 0) {
-    query = query.in('region', params.regions);
-  }
-  if (params.sites && params.sites.length > 0) {
-    query = query.in('site', params.sites);
-  }
-
-  if (params.timeScale === 'Annual' && params.yearRange) {
-    query = query.gte('year', params.yearRange[0]).lte('year', params.yearRange[1]);
-  } else if (params.timeScale === 'Monthly' && params.dateRange) {
-    query = query.gte('monthyear', params.dateRange[0]).lte('monthyear', params.dateRange[1]);
-  } else if (params.timeScale === 'Quarterly' && params.quarters && params.quarters.length > 0) {
-    query = query.in('quarter', params.quarters);
+  const coords: { site: string; latitude: number; longitude: number }[] = [];
+  {
+    let from = 0;
+    while (true) {
+      const { data, error } = await supabase
+        .from('health_facility_coordinates')
+        .select('site, latitude, longitude')
+        .range(from, from + PAGE_SIZE - 1);
+      if (error) throw error;
+      const page = data ?? [];
+      coords.push(...page);
+      if (page.length < PAGE_SIZE) break;
+      from += PAGE_SIZE;
+    }
   }
 
-  const { data, error } = await query.order('monthyear', { ascending: true });
-  if (error) throw error;
+  const coordMap = new Map(coords.map((c) => [c.site, { lat: c.latitude, lng: c.longitude }]));
 
-  return (data ?? [])
+  // Build monthly data query with pagination
+  const monthlyRows: UmspMonthlyData[] = [];
+  let from = 0;
+  while (true) {
+    let query = supabase.from('umsp_monthly_data').select('*');
+
+    if (params.regions && params.regions.length > 0) {
+      query = query.in('region', params.regions);
+    }
+    if (params.sites && params.sites.length > 0) {
+      query = query.in('site', params.sites);
+    }
+
+    if (params.timeScale === 'Annual' && params.yearRange) {
+      query = query.gte('year', params.yearRange[0]).lte('year', params.yearRange[1]);
+    } else if (params.timeScale === 'Monthly' && params.dateRange) {
+      query = query.gte('monthyear', params.dateRange[0]).lte('monthyear', params.dateRange[1]);
+    } else if (params.timeScale === 'Quarterly' && params.quarters && params.quarters.length > 0) {
+      query = query.in('quarter', params.quarters);
+    }
+
+    const { data, error } = await query
+      .order('monthyear', { ascending: true })
+      .range(from, from + PAGE_SIZE - 1);
+    if (error) throw error;
+
+    const page = data ?? [];
+    monthlyRows.push(...page);
+    if (page.length < PAGE_SIZE) break;
+    from += PAGE_SIZE;
+  }
+
+  return monthlyRows
     .map((row) => {
       const coord = coordMap.get(row.site);
       if (!coord) return null;

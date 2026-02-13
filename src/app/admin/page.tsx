@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import { CsvUploader } from '@/components/admin/CsvUploader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,14 +12,14 @@ import Link from 'next/link';
 
 export default function AdminPage() {
   const { user } = useAdminAuth();
-  const router = useRouter();
   const { toast } = useToast();
 
   const handleSignOut = useCallback(async () => {
     const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push('/admin/login');
-  }, [router]);
+    const { error } = await supabase.auth.signOut({ scope: 'global' });
+    if (error) console.error('Sign out failed:', error.message);
+    window.location.assign('/admin/login');
+  }, []);
 
   const handleUploadComplete = useCallback(() => {
     toast({ title: 'Upload complete', description: 'Data has been updated successfully.' });

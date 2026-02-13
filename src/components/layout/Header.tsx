@@ -1,20 +1,37 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Activity, Menu, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { MobileNav } from './MobileNav';
 import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
 
 export function Header() {
-  const router = useRouter();
+  const [email, setEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    async function loadUser() {
+      const { data: { user } } = await supabase.auth.getUser();
+      setEmail(user?.email ?? null);
+    }
+
+    loadUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setEmail(session?.user?.email ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleSignOut = async () => {
     const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push('/login');
-    router.refresh();
+    const { error } = await supabase.auth.signOut({ scope: 'global' });
+    if (error) console.error('Sign out failed:', error.message);
+    window.location.assign('/login');
   };
 
   return (
@@ -39,6 +56,12 @@ export function Header() {
           <h1 className="text-sm font-semibold md:text-base">Uganda Malaria Surveillance</h1>
         </div>
       </div>
+
+      {email ? (
+        <div className="hidden max-w-[240px] truncate text-sm text-muted-foreground md:block" title={email}>
+          {email}
+        </div>
+      ) : null}
 
       <Button variant="outline" size="sm" onClick={handleSignOut} className="gap-2">
         <LogOut className="h-4 w-4" />

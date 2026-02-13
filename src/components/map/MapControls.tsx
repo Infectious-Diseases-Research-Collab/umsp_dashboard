@@ -19,10 +19,43 @@ interface Props {
   sites: string[];
   yearRange: { min: number; max: number };
   quarters: string[];
+  monthyears: string[];
   onDownloadCsv: () => void;
 }
 
-export function MapControls({ filters, onChange, onReset, regions, sites, yearRange, quarters, onDownloadCsv }: Props) {
+function getRangeIndexes(values: string[], selectedStart?: string, selectedEnd?: string): [number, number] {
+  const maxIndex = Math.max(values.length - 1, 0);
+  if (!values.length) return [0, 0];
+  const start = selectedStart ? values.indexOf(selectedStart) : 0;
+  const end = selectedEnd ? values.indexOf(selectedEnd) : maxIndex;
+  return [
+    start >= 0 ? start : 0,
+    end >= 0 ? end : maxIndex,
+  ];
+}
+
+function formatMonthLabel(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
+}
+
+function quarterSortKey(quarter: string): number {
+  const qMatch = quarter.match(/Q([1-4])/i);
+  const yMatch = quarter.match(/(19|20)\d{2}/);
+  if (!qMatch || !yMatch) return 0;
+  return Number(yMatch[0]) * 10 + Number(qMatch[1]);
+}
+
+export function MapControls({ filters, onChange, onReset, regions, sites, yearRange, quarters, monthyears, onDownloadCsv }: Props) {
+  const sortedQuarters = [...quarters].sort((a, b) => quarterSortKey(a) - quarterSortKey(b));
+  const [quarterStart, quarterEnd] = getRangeIndexes(
+    sortedQuarters,
+    filters.quarters[0],
+    filters.quarters[filters.quarters.length - 1]
+  );
+  const [monthStart, monthEnd] = getRangeIndexes(monthyears, filters.dateRange[0], filters.dateRange[1]);
+
   return (
     <div className="app-panel max-h-[calc(100vh-160px)] space-y-4 overflow-y-auto rounded-2xl p-4">
       <div>
@@ -56,10 +89,43 @@ export function MapControls({ filters, onChange, onReset, regions, sites, yearRa
         </div>
       )}
 
-      {filters.timeScale === 'Quarterly' && (
+      {filters.timeScale === 'Monthly' && monthyears.length > 0 && (
         <div>
-          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Quarters</Label>
-          <MultiSelect options={quarters} selected={filters.quarters} onChange={(v) => onChange({ quarters: v })} placeholder="Select quarters" />
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Months: {formatMonthLabel(monthyears[monthStart])} - {formatMonthLabel(monthyears[monthEnd])}
+          </Label>
+          <Slider
+            min={0}
+            max={monthyears.length - 1}
+            step={1}
+            value={[monthStart, monthEnd]}
+            onValueChange={(v) => {
+              const start = Math.min(v[0], v[1]);
+              const end = Math.max(v[0], v[1]);
+              onChange({ dateRange: [monthyears[start], monthyears[end]] });
+            }}
+            className="mt-2"
+          />
+        </div>
+      )}
+
+      {filters.timeScale === 'Quarterly' && sortedQuarters.length > 0 && (
+        <div>
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Quarters: {sortedQuarters[quarterStart]} - {sortedQuarters[quarterEnd]}
+          </Label>
+          <Slider
+            min={0}
+            max={sortedQuarters.length - 1}
+            step={1}
+            value={[quarterStart, quarterEnd]}
+            onValueChange={(v) => {
+              const start = Math.min(v[0], v[1]);
+              const end = Math.max(v[0], v[1]);
+              onChange({ quarters: sortedQuarters.slice(start, end + 1) });
+            }}
+            className="mt-2"
+          />
         </div>
       )}
 

@@ -106,13 +106,32 @@ export function TemporalChart({ data, metric, plotType, displayType, timeScale, 
 
     const xTitle = timeScale === 'Annual' ? 'Year' : timeScale === 'Quarterly' ? 'Quarter' : 'Date';
 
+    const useVerticalLegend = displayType !== 'Separated' && groups.length > 12;
+    const legendRows = Math.max(1, Math.ceil(groups.length / 6));
+    const legendBottomSpace = displayType === 'Separated' || useVerticalLegend ? 0 : legendRows * 24;
+    const baseBottom = timeScale === 'Quarterly' ? 120 : 95;
+    const rightMargin = useVerticalLegend ? 260 : 20;
+
     const layout: Partial<Record<string, unknown>> = {
-      height: displayType === 'Separated' ? Math.max(400, groups.length * 200) : 500,
-      margin: { l: 60, r: 20, t: 40, b: 80 },
-      xaxis: { title: xTitle, tickangle: -45 },
+      height: displayType === 'Separated' ? Math.max(400, groups.length * 200) : 560,
+      margin: { l: 60, r: rightMargin, t: 40, b: baseBottom + legendBottomSpace },
+      xaxis: { title: xTitle, tickangle: -45, automargin: true },
       yaxis: { title: metric },
       barmode: plotType === 'Bar' ? 'dodge' : undefined,
-      legend: { orientation: 'h', y: -0.2 },
+      legend: useVerticalLegend
+        ? {
+            orientation: 'v',
+            x: 1.02,
+            xanchor: 'left',
+            y: 1,
+            yanchor: 'top',
+            font: { size: 10 },
+          }
+        : {
+            orientation: 'h',
+            y: -0.34,
+            yanchor: 'top',
+          },
       title: `${timeScale} ${metric} per ${geoLevel}`,
     };
 

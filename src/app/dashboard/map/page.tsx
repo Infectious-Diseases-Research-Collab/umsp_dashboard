@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { MapControls } from '@/components/map/MapControls';
 import { MapStatsBar } from '@/components/map/MapStatsBar';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { useSupabaseQuery } from '@/lib/hooks/use-supabase-query';
-import { fetchDistinctRegions, fetchDistinctSites, fetchYearRange, fetchDistinctQuarters } from '@/lib/queries/monthly-data';
+import { fetchDistinctRegions, fetchDistinctSites, fetchYearRange, fetchDistinctQuarters, fetchDistinctMonthyears } from '@/lib/queries/monthly-data';
 import { fetchMapData } from '@/lib/queries/map-data';
 import { MapFilters } from '@/types/filters';
 import { downloadCsv } from '@/lib/utils/csv-export';
@@ -35,11 +35,25 @@ const DEFAULT_FILTERS: MapFilters = {
 
 export default function MapPage() {
   const [filters, setFilters] = useState<MapFilters>(DEFAULT_FILTERS);
+  const [initialized, setInitialized] = useState(false);
 
   const { data: regions } = useSupabaseQuery(() => fetchDistinctRegions());
   const { data: allSites } = useSupabaseQuery(() => fetchDistinctSites());
   const { data: yearRange } = useSupabaseQuery(() => fetchYearRange());
   const { data: quarters } = useSupabaseQuery(() => fetchDistinctQuarters());
+  const { data: monthyears } = useSupabaseQuery(() => fetchDistinctMonthyears());
+
+  useEffect(() => {
+    if (initialized) return;
+    if (!yearRange || !quarters || !monthyears || monthyears.length === 0) return;
+    setFilters((prev) => ({
+      ...prev,
+      yearRange: [yearRange.min, yearRange.max],
+      dateRange: [monthyears[0], monthyears[monthyears.length - 1]],
+      quarters: quarters,
+    }));
+    setInitialized(true);
+  }, [initialized, yearRange, quarters, monthyears]);
 
   // Filter sites by selected regions
   const filteredSiteOptions = useMemo(() => {
@@ -67,8 +81,12 @@ export default function MapPage() {
     setFilters({
       ...DEFAULT_FILTERS,
       yearRange: yearRange ? [yearRange.min, yearRange.max] : DEFAULT_FILTERS.yearRange,
+      dateRange: monthyears && monthyears.length > 0
+        ? [monthyears[0], monthyears[monthyears.length - 1]]
+        : DEFAULT_FILTERS.dateRange,
+      quarters: quarters ?? DEFAULT_FILTERS.quarters,
     });
-  }, [yearRange]);
+  }, [yearRange, monthyears, quarters]);
 
   const handleDownloadCsv = useCallback(() => {
     if (!mapData) return;
@@ -106,6 +124,7 @@ export default function MapPage() {
           sites={filteredSiteOptions}
           yearRange={yearRange ?? { min: 2018, max: 2025 }}
           quarters={quarters ?? []}
+          monthyears={monthyears ?? []}
           onDownloadCsv={handleDownloadCsv}
         />
       </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { TimeSeriesControls } from '@/components/time-series/TimeSeriesControls';
 import { TemporalChart } from '@/components/time-series/TemporalChart';
 import { SeasonalChart } from '@/components/time-series/SeasonalChart';
@@ -9,7 +9,7 @@ import { StatsSummaryTable } from '@/components/time-series/StatsSummaryTable';
 import { ValueBox } from '@/components/overview/ValueBox';
 import { TrendingUp } from 'lucide-react';
 import { useSupabaseQuery } from '@/lib/hooks/use-supabase-query';
-import { fetchDistinctRegions, fetchDistinctSites, fetchYearRange, fetchDistinctQuarters } from '@/lib/queries/monthly-data';
+import { fetchDistinctRegions, fetchDistinctSites, fetchYearRange, fetchDistinctQuarters, fetchDistinctMonthyears } from '@/lib/queries/monthly-data';
 import { fetchActiveSiteNames } from '@/lib/queries/active-sites';
 import { fetchTimeSeriesData } from '@/lib/queries/time-series';
 import { matchActiveSite } from '@/lib/utils/indicators';
@@ -36,12 +36,26 @@ const DEFAULT_FILTERS: TimeSeriesFilters = {
 
 export default function TimeSeriesPage() {
   const [filters, setFilters] = useState<TimeSeriesFilters>(DEFAULT_FILTERS);
+  const [initialized, setInitialized] = useState(false);
 
   const { data: regions } = useSupabaseQuery(() => fetchDistinctRegions());
   const { data: allSites } = useSupabaseQuery(() => fetchDistinctSites());
   const { data: activeSiteNames } = useSupabaseQuery(() => fetchActiveSiteNames());
   const { data: yearRange } = useSupabaseQuery(() => fetchYearRange());
   const { data: quarters } = useSupabaseQuery(() => fetchDistinctQuarters());
+  const { data: monthyears } = useSupabaseQuery(() => fetchDistinctMonthyears());
+
+  useEffect(() => {
+    if (initialized) return;
+    if (!yearRange || !quarters || !monthyears || monthyears.length === 0) return;
+    setFilters((prev) => ({
+      ...prev,
+      yearRange: [yearRange.min, yearRange.max],
+      dateRange: [monthyears[0], monthyears[monthyears.length - 1]],
+      quarters: quarters,
+    }));
+    setInitialized(true);
+  }, [initialized, yearRange, quarters, monthyears]);
 
   // Compute entity options based on geo level and status
   const entityOptions = useMemo(() => {
@@ -91,8 +105,12 @@ export default function TimeSeriesPage() {
     setFilters({
       ...DEFAULT_FILTERS,
       yearRange: yearRange ? [yearRange.min, yearRange.max] : DEFAULT_FILTERS.yearRange,
+      dateRange: monthyears && monthyears.length > 0
+        ? [monthyears[0], monthyears[monthyears.length - 1]]
+        : DEFAULT_FILTERS.dateRange,
+      quarters: quarters ?? DEFAULT_FILTERS.quarters,
     });
-  }, [yearRange]);
+  }, [yearRange, monthyears, quarters]);
 
   const handleDownloadPlot = useCallback(() => {
     // Plotly's built-in toImage handles this via the toolbar
@@ -137,6 +155,7 @@ export default function TimeSeriesPage() {
           entities={entityOptions}
           yearRange={yearRange ?? { min: 2018, max: 2025 }}
           quarters={quarters ?? []}
+          monthyears={monthyears ?? []}
           onDownloadPlot={handleDownloadPlot}
           onDownloadData={handleDownloadData}
           onDownloadTable={handleDownloadTable}
