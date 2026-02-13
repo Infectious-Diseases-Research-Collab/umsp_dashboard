@@ -3,15 +3,15 @@ import { UmspMonthlyData } from '@/types/database';
 
 function getClient() { return createClient(); }
 const PAGE_SIZE = 1000;
+type PagedResult<T> = { data: T[] | null; error: unknown };
 
-async function fetchAllRows<T>(buildQuery: (client: ReturnType<typeof getClient>) => {
-  range: (from: number, to: number) => Promise<{ data: T[] | null; error: unknown }>
-}): Promise<T[]> {
+async function fetchAllRows<T>(buildQuery: (client: ReturnType<typeof getClient>) => unknown): Promise<T[]> {
   const allRows: T[] = [];
   let from = 0;
 
   while (true) {
-    const { data, error } = await buildQuery(getClient()).range(from, from + PAGE_SIZE - 1);
+    const query = buildQuery(getClient()) as { range: (from: number, to: number) => unknown };
+    const { data, error } = await (query.range(from, from + PAGE_SIZE - 1) as PromiseLike<PagedResult<T>>);
     if (error) throw error;
 
     const rows = data ?? [];
