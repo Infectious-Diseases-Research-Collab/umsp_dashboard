@@ -1,0 +1,10 @@
+CREATE INDEX idx_monthly_site ON umsp_monthly_data (site);
+CREATE INDEX idx_monthly_region ON umsp_monthly_data (region);
+CREATE INDEX idx_monthly_year ON umsp_monthly_data (year);
+CREATE INDEX idx_monthly_monthyear ON umsp_monthly_data (monthyear);
+CREATE INDEX idx_monthly_district ON umsp_monthly_data (district);
+CREATE INDEX idx_monthly_quarter ON umsp_monthly_data (quarter);
+CREATE INDEX idx_monthly_region_monthyear ON umsp_monthly_data (region, monthyear);
+CREATE INDEX idx_monthly_site_monthyear ON umsp_monthly_data (site, monthyear);
+CREATE INDEX idx_coords_site ON health_facility_coordinates (site);
+CREATE INDEX idx_active_site ON active_sites (site);
