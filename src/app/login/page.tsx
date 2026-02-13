@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Activity, Loader2, ShieldCheck, BarChart3, Map } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-type AuthMode = 'signin' | 'signup' | 'forgot' | 'reset';
+type AuthMode = 'signin' | 'signup' | 'forgot' | 'reset' | 'verify';
 
 export default function LoginPage() {
   const [mode, setMode] = useState<AuthMode>('signin');
@@ -62,7 +62,7 @@ export default function LoginPage() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/dashboard/overview`,
+        emailRedirectTo: `${window.location.origin}/login`,
       },
     });
 
@@ -79,7 +79,9 @@ export default function LoginPage() {
       return;
     }
 
-    toast({ title: 'Account created', description: 'Check your email to confirm your account, then sign in.' });
+    setPassword('');
+    setConfirmPassword('');
+    setMode('verify');
     setLoadingAction(null);
   };
 
@@ -135,6 +137,7 @@ export default function LoginPage() {
   const isSignUp = mode === 'signup';
   const isForgot = mode === 'forgot';
   const isReset = mode === 'reset';
+  const isVerify = mode === 'verify';
 
   return (
     <div className="min-h-screen bg-slate-100 p-4 md:p-8">
@@ -165,73 +168,86 @@ export default function LoginPage() {
                 {isSignUp && 'Create account'}
                 {isForgot && 'Forgot password'}
                 {isReset && 'Set new password'}
+                {isVerify && 'Check your email'}
               </CardTitle>
               <CardDescription className="text-slate-600">
                 {isSignIn && 'Use your credentials to access the dashboard.'}
                 {isSignUp && 'Create your credentials to access the dashboard.'}
                 {isForgot && 'Enter your account email and we will send a reset link.'}
                 {isReset && 'Enter a new password to complete recovery.'}
+                {isVerify && 'We sent a confirmation link to your email. Open it, then sign in.'}
               </CardDescription>
             </CardHeader>
 
             <CardContent className="space-y-5 px-0">
-              <form
-                onSubmit={
-                  isSignIn
-                    ? handleSignIn
-                    : (e) => {
-                        e.preventDefault();
-                        if (isSignUp) handleSignUp();
-                        if (isForgot) handleForgotPassword();
-                        if (isReset) handleResetPassword();
-                      }
-                }
-                className="space-y-4"
-              >
-                {!isReset ? (
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="text-slate-700">Email</Label>
-                    <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-11 bg-white" />
-                  </div>
-                ) : null}
+              {isVerify ? (
+                <div className="space-y-4 rounded-xl border border-sky-200 bg-sky-50 p-4 text-sm text-sky-900">
+                  <p className="font-medium">Verification email sent to:</p>
+                  <p>{email}</p>
+                  <p>After confirming your account from your email, return and sign in.</p>
+                  <Button type="button" className="w-full" onClick={() => setMode('signin')}>
+                    Back to sign in
+                  </Button>
+                </div>
+              ) : (
+                <form
+                  onSubmit={
+                    isSignIn
+                      ? handleSignIn
+                      : (e) => {
+                          e.preventDefault();
+                          if (isSignUp) handleSignUp();
+                          if (isForgot) handleForgotPassword();
+                          if (isReset) handleResetPassword();
+                        }
+                  }
+                  className="space-y-4"
+                >
+                  {!isReset ? (
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-slate-700">Email</Label>
+                      <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-11 bg-white" />
+                    </div>
+                  ) : null}
 
-                {!isForgot ? (
-                  <div className="space-y-2">
-                    <Label htmlFor="password" className="text-slate-700">{isReset ? 'New Password' : 'Password'}</Label>
-                    <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="h-11 bg-white" />
-                  </div>
-                ) : null}
+                  {!isForgot ? (
+                    <div className="space-y-2">
+                      <Label htmlFor="password" className="text-slate-700">{isReset ? 'New Password' : 'Password'}</Label>
+                      <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="h-11 bg-white" />
+                    </div>
+                  ) : null}
 
-                {(isSignUp || isReset) ? (
-                  <div className="space-y-2">
-                    <Label htmlFor="confirm-password" className="text-slate-700">Confirm Password</Label>
-                    <Input
-                      id="confirm-password"
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      required
-                      className="h-11 bg-white"
-                    />
-                  </div>
-                ) : null}
+                  {(isSignUp || isReset) ? (
+                    <div className="space-y-2">
+                      <Label htmlFor="confirm-password" className="text-slate-700">Confirm Password</Label>
+                      <Input
+                        id="confirm-password"
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                        className="h-11 bg-white"
+                      />
+                    </div>
+                  ) : null}
 
-                {isSignIn ? (
-                  <div className="text-right">
-                    <Button type="button" variant="link" className="h-auto px-0 text-xs" onClick={() => setMode('forgot')}>
-                      Forgot password?
-                    </Button>
-                  </div>
-                ) : null}
+                  {isSignIn ? (
+                    <div className="text-right">
+                      <Button type="button" variant="link" className="h-auto px-0 text-xs" onClick={() => setMode('forgot')}>
+                        Forgot password?
+                      </Button>
+                    </div>
+                  ) : null}
 
-                <Button type="submit" className="h-11 w-full" disabled={isLoading}>
-                  {loadingAction === mode ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                  {isSignIn && 'Sign In'}
-                  {isSignUp && 'Create Account'}
-                  {isForgot && 'Send Reset Link'}
-                  {isReset && 'Update Password'}
-                </Button>
-              </form>
+                  <Button type="submit" className="h-11 w-full" disabled={isLoading}>
+                    {loadingAction === mode ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    {isSignIn && 'Sign In'}
+                    {isSignUp && 'Create Account'}
+                    {isForgot && 'Send Reset Link'}
+                    {isReset && 'Update Password'}
+                  </Button>
+                </form>
+              )}
 
               <p className="text-center text-sm text-slate-600">
                 {isSignIn ? (
@@ -248,6 +264,10 @@ export default function LoginPage() {
                       Sign in
                     </Button>
                   </>
+                ) : isVerify ? (
+                  <Button type="button" variant="link" className="h-auto px-0" onClick={() => setMode('signin')} disabled={isLoading}>
+                    Back to sign in
+                  </Button>
                 ) : (
                   <Button type="button" variant="link" className="h-auto px-0" onClick={() => setMode('signin')} disabled={isLoading}>
                     Back to sign in
