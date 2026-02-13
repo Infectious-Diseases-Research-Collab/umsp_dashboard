@@ -27,7 +27,7 @@ export function ReportConfig({ reportType, sections, onTypeChange, onSectionsCha
   };
 
   return (
-    <Card>
+    <Card className="app-panel">
       <CardHeader>
         <CardTitle className="text-lg">Report Configuration</CardTitle>
       </CardHeader>

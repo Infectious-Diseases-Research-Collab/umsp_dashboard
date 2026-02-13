@@ -20,7 +20,7 @@ export function ColumnSelector({ selected, onChange }: Props) {
   };
 
   return (
-    <Card>
+    <Card className="app-panel">
       <CardHeader>
         <CardTitle className="text-sm">Visible Columns</CardTitle>
       </CardHeader>

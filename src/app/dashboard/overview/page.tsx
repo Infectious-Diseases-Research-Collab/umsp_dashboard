@@ -36,28 +36,28 @@ export default function OverviewPage() {
           title="Total Sites"
           value={allSites?.length ?? '-'}
           icon={Building2}
-          color="#26A69A"
+          color="#0f8f97"
           loading={sitesLoading}
         />
         <ValueBox
           title="Active Sites"
           value={activeSites?.length ?? '-'}
           icon={Activity}
-          color="#4CAF50"
+          color="#2e9f74"
           loading={activeLoading}
         />
         <ValueBox
           title="Latest Date"
           value={stats?.latestDate ? formatDate(stats.latestDate) : '-'}
           icon={Calendar}
-          color="#FF9800"
+          color="#df8d2f"
           loading={statsLoading}
         />
         <ValueBox
           title="Avg Incidence"
           value={formatNumber(avgIncidence)}
           icon={TrendingUp}
-          color="#F44336"
+          color="#d86144"
           loading={regionalLoading}
         />
       </div>

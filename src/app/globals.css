@@ -10,57 +10,58 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 13%;
+    --background: 214 28% 97%;
+    --foreground: 218 24% 16%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 13%;
+    --card-foreground: 218 24% 16%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 13%;
-    --primary: 240 97% 21%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 174 51% 40%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 174 51% 40%;
-    --chart-1: 0 78% 53%;
-    --chart-2: 207 68% 52%;
-    --chart-3: 120 39% 49%;
-    --chart-4: 36 100% 50%;
-    --chart-5: 280 50% 60%;
-    --radius: 0.5rem;
+    --popover-foreground: 218 24% 16%;
+    --primary: 199 89% 37%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 32% 94%;
+    --secondary-foreground: 218 24% 16%;
+    --muted: 210 26% 93%;
+    --muted-foreground: 218 12% 43%;
+    --accent: 43 96% 56%;
+    --accent-foreground: 218 24% 16%;
+    --destructive: 2 72% 52%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 23% 86%;
+    --input: 214 20% 87%;
+    --ring: 199 89% 37%;
+    --chart-1: 195 96% 36%;
+    --chart-2: 20 90% 57%;
+    --chart-3: 157 55% 42%;
+    --chart-4: 45 94% 53%;
+    --chart-5: 340 72% 51%;
+    --radius: 0.9rem;
   }
+
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --background: 221 32% 10%;
+    --foreground: 212 20% 95%;
+    --card: 221 30% 13%;
+    --card-foreground: 212 20% 95%;
+    --popover: 221 30% 13%;
+    --popover-foreground: 212 20% 95%;
+    --primary: 199 90% 60%;
+    --primary-foreground: 221 32% 10%;
+    --secondary: 219 23% 20%;
+    --secondary-foreground: 212 20% 95%;
+    --muted: 219 23% 20%;
+    --muted-foreground: 216 12% 70%;
+    --accent: 43 96% 56%;
+    --accent-foreground: 221 32% 10%;
+    --destructive: 2 72% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 18% 26%;
+    --input: 220 18% 26%;
+    --ring: 199 90% 60%;
+    --chart-1: 199 90% 60%;
+    --chart-2: 20 90% 57%;
+    --chart-3: 157 55% 52%;
+    --chart-4: 45 94% 62%;
+    --chart-5: 340 72% 61%;
   }
 }
 
@@ -68,9 +69,23 @@
   * {
     @apply border-border;
   }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
   }
+}
+
+.app-shell {
+  background:
+    radial-gradient(circle at 10% 0%, rgba(14, 165, 233, 0.08), transparent 35%),
+    radial-gradient(circle at 100% 0%, rgba(250, 204, 21, 0.08), transparent 28%),
+    linear-gradient(180deg, #f8fbff 0%, #f4f7fc 100%);
+}
+
+.app-panel {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(156, 176, 208, 0.28);
+  box-shadow: 0 12px 32px rgba(39, 63, 109, 0.08);
 }
 
 /* Leaflet fixes for Next.js */

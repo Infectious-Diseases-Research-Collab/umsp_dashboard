@@ -27,38 +27,46 @@ export default function AdminPage() {
   }, [toast]);
 
   return (
-    <div className="min-h-screen bg-[#F5F6F5]">
-      <header className="h-14 bg-[#00016B] text-white flex items-center justify-between px-6">
-        <div className="flex items-center gap-3">
-          <Activity className="w-5 h-5 text-[#26A69A]" />
-          <span className="font-semibold">Admin Panel</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-white/70">{user?.email}</span>
-          <Button variant="ghost" size="sm" className="text-white hover:bg-white/10" asChild>
-            <Link href="/dashboard"><ArrowLeft className="w-4 h-4 mr-1" /> Dashboard</Link>
-          </Button>
-          <Button variant="ghost" size="sm" className="text-white hover:bg-white/10" onClick={handleSignOut}>
-            <LogOut className="w-4 h-4 mr-1" /> Sign Out
-          </Button>
+    <div className="min-h-screen app-shell">
+      <header className="sticky top-0 z-20 border-b border-border/60 bg-background/85 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/12 text-primary">
+              <Activity className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Admin</p>
+              <span className="font-semibold">Data Management</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 md:gap-3">
+            <span className="hidden text-sm text-muted-foreground md:inline">{user?.email}</span>
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/dashboard">
+                <ArrowLeft className="mr-1 h-4 w-4" /> Dashboard
+              </Link>
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleSignOut}>
+              <LogOut className="mr-1 h-4 w-4" /> Sign Out
+            </Button>
+          </div>
         </div>
       </header>
 
-      <main className="container mx-auto p-6 max-w-3xl">
-        <h1 className="text-2xl font-bold mb-6">Data Management</h1>
-
-        <Card className="mb-6">
+      <main className="mx-auto w-full max-w-4xl px-4 py-6 md:px-6 md:py-8">
+        <Card className="mb-6 app-panel">
           <CardHeader>
-            <CardTitle className="text-lg">Instructions</CardTitle>
+            <CardTitle className="text-lg">Upload Instructions</CardTitle>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground space-y-2">
+          <CardContent className="space-y-2 text-sm text-muted-foreground">
             <p>Upload CSV files to update dashboard data. Three tables are supported:</p>
-            <ul className="list-disc list-inside space-y-1">
-              <li><strong>Monthly Surveillance Data</strong>: Main data with Site, Region, district, monthyear, indicators</li>
-              <li><strong>Health Facility Coordinates</strong>: GPS coordinates for map display</li>
-              <li><strong>Active Sites</strong>: List of currently active surveillance sites</li>
+            <ul className="list-inside list-disc space-y-1">
+              <li><strong>Monthly Surveillance Data</strong>: Site, region, district, monthyear, and indicator fields</li>
+              <li><strong>Health Facility Coordinates</strong>: GPS coordinates for map rendering</li>
+              <li><strong>Active Sites</strong>: Sites currently included in surveillance tracking</li>
             </ul>
-            <p><strong>Replace mode</strong> deletes all existing data before inserting. <strong>Append mode</strong> upserts (updates existing, inserts new).</p>
+            <p><strong>Replace mode</strong> clears old data before insert. <strong>Append mode</strong> upserts existing rows.</p>
           </CardContent>
         </Card>
 

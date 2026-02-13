@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Activity, Loader2 } from 'lucide-react';
+import { Activity, Loader2, ShieldCheck } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function AdminLoginPage() {
@@ -42,32 +42,35 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#00016B] to-[#1A237E] p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="mx-auto w-12 h-12 rounded-lg bg-[#26A69A] flex items-center justify-center mb-4">
-            <Activity className="w-7 h-7 text-white" />
-          </div>
-          <CardTitle>Admin Login</CardTitle>
-          <CardDescription>Sign in with an admin account to manage data</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+    <div className="min-h-screen bg-slate-100 p-4 md:p-8">
+      <div className="mx-auto flex min-h-[calc(100vh-2rem)] w-full max-w-3xl items-center justify-center rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_22px_60px_rgba(30,41,59,0.18)] sm:p-10">
+        <Card className="w-full max-w-md border-0 bg-transparent shadow-none">
+          <CardHeader className="px-0 text-left">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+              <Activity className="h-6 w-6" />
             </div>
-            <div>
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-            </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-              Sign In
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+            <CardTitle className="text-3xl text-slate-900">Admin sign in</CardTitle>
+            <CardDescription className="text-slate-600">Sign in with an admin account to manage upload operations.</CardDescription>
+          </CardHeader>
+
+          <CardContent className="px-0">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <Label htmlFor="email" className="text-slate-700">Email</Label>
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="mt-2 h-11 bg-white" />
+              </div>
+              <div>
+                <Label htmlFor="password" className="text-slate-700">Password</Label>
+                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="mt-2 h-11 bg-white" />
+              </div>
+              <Button type="submit" className="h-11 w-full" disabled={loading}>
+                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
+                Sign In
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

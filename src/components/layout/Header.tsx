@@ -18,28 +18,30 @@ export function Header() {
   };
 
   return (
-    <header className="h-14 bg-[#00016B] text-white flex items-center px-4 gap-4 border-b border-white/10">
+    <header className="sticky top-0 z-20 flex h-16 items-center gap-4 border-b border-border/70 bg-background/95 px-4 backdrop-blur md:px-6">
       <Sheet>
         <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" className="lg:hidden text-white hover:bg-white/10">
-            <Menu className="w-5 h-5" />
+          <Button variant="outline" size="icon" className="lg:hidden">
+            <Menu className="h-5 w-5" />
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="w-64 p-0 bg-[#1A237E] border-none">
+        <SheetContent side="left" className="w-72 border-r p-0">
           <MobileNav />
         </SheetContent>
       </Sheet>
-      <div className="flex items-center gap-2 flex-1">
-        <Activity className="w-5 h-5 text-[#26A69A]" />
-        <h1 className="font-semibold text-sm md:text-base">IDRC Malaria Surveillance Dashboard</h1>
+
+      <div className="flex flex-1 items-center gap-3">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/12 text-primary">
+          <Activity className="h-5 w-5" />
+        </div>
+        <div>
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Dashboard</p>
+          <h1 className="text-sm font-semibold md:text-base">Uganda Malaria Surveillance</h1>
+        </div>
       </div>
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={handleSignOut}
-        className="text-white/80 hover:text-white hover:bg-white/10"
-      >
-        <LogOut className="w-4 h-4 mr-2" />
+
+      <Button variant="outline" size="sm" onClick={handleSignOut} className="gap-2">
+        <LogOut className="h-4 w-4" />
         Sign Out
       </Button>
     </header>

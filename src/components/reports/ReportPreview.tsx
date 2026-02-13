@@ -29,7 +29,7 @@ export function ReportPreview({ reportType, sections, stats }: Props) {
   const typeLabel = REPORT_TYPES.find((rt) => rt.value === reportType)?.label ?? reportType;
 
   return (
-    <Card>
+    <Card className="app-panel">
       <CardHeader>
         <CardTitle className="text-lg">Report Preview</CardTitle>
         <Badge variant="secondary" className="w-fit">{typeLabel}</Badge>

@@ -1,7 +1,8 @@
 'use client';
 
+import { Fragment } from 'react';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
@@ -28,14 +29,10 @@ export function TimeSeriesControls({
   onDownloadPlot, onDownloadData, onDownloadTable,
 }: Props) {
   return (
-    <div className="space-y-4 p-4 bg-white rounded-lg border shadow-sm overflow-y-auto max-h-[calc(100vh-160px)]">
+    <div className="app-panel max-h-[calc(100vh-160px)] space-y-4 overflow-y-auto rounded-2xl p-4">
       <div>
         <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Status</Label>
-        <Select
-          value={filters.status}
-          onValueChange={(v) => onChange({ status: v as 'Active Sites' | 'All Sites' })}
-          disabled={filters.geoLevel === 'Region'}
-        >
+        <Select value={filters.status} onValueChange={(v) => onChange({ status: v as 'Active Sites' | 'All Sites' })} disabled={filters.geoLevel === 'Region'}>
           <SelectTrigger><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="Active Sites">Active Sites</SelectItem>
@@ -59,13 +56,7 @@ export function TimeSeriesControls({
         <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           {filters.geoLevel === 'Site' ? 'Sites' : 'Regions'} (max 10)
         </Label>
-        <MultiSelect
-          options={entities}
-          selected={filters.selectedEntities}
-          onChange={(v) => onChange({ selectedEntities: v })}
-          placeholder="Select entities..."
-          maxItems={10}
-        />
+        <MultiSelect options={entities} selected={filters.selectedEntities} onChange={(v) => onChange({ selectedEntities: v })} placeholder="Select entities..." maxItems={10} />
       </div>
 
       <div>
@@ -82,27 +73,15 @@ export function TimeSeriesControls({
 
       {filters.timeScale === 'Annual' && (
         <div>
-          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Year: {filters.yearRange[0]} - {filters.yearRange[1]}
-          </Label>
-          <Slider
-            min={yearRange.min} max={yearRange.max} step={1}
-            value={filters.yearRange}
-            onValueChange={(v) => onChange({ yearRange: v as [number, number] })}
-            className="mt-2"
-          />
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Year: {filters.yearRange[0]} - {filters.yearRange[1]}</Label>
+          <Slider min={yearRange.min} max={yearRange.max} step={1} value={filters.yearRange} onValueChange={(v) => onChange({ yearRange: v as [number, number] })} className="mt-2" />
         </div>
       )}
 
       {filters.timeScale === 'Quarterly' && (
         <div>
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Quarters</Label>
-          <MultiSelect
-            options={quarters}
-            selected={filters.quarters}
-            onChange={(v) => onChange({ quarters: v })}
-            placeholder="Select quarters"
-          />
+          <MultiSelect options={quarters} selected={filters.quarters} onChange={(v) => onChange({ quarters: v })} placeholder="Select quarters" />
         </div>
       )}
 
@@ -112,12 +91,14 @@ export function TimeSeriesControls({
           <SelectTrigger><SelectValue /></SelectTrigger>
           <SelectContent>
             {Object.entries(INDICATOR_GROUPS).map(([group, indicators]) => (
-              <div key={group}>
-                <div className="px-2 py-1 text-xs font-semibold text-muted-foreground">{group}</div>
-                {indicators.map((ind) => (
-                  <SelectItem key={ind} value={ind}>{ind}</SelectItem>
-                ))}
-              </div>
+              <Fragment key={group}>
+                <SelectGroup>
+                  <SelectLabel>{group}</SelectLabel>
+                  {indicators.map((ind) => (
+                    <SelectItem key={ind} value={ind}>{ind}</SelectItem>
+                  ))}
+                </SelectGroup>
+              </Fragment>
             ))}
           </SelectContent>
         </Select>
@@ -146,20 +127,12 @@ export function TimeSeriesControls({
       </div>
 
       <div className="flex items-center gap-2">
-        <Checkbox
-          id="showTrend"
-          checked={filters.showTrendLine}
-          onCheckedChange={(v) => onChange({ showTrendLine: !!v })}
-        />
+        <Checkbox id="showTrend" checked={filters.showTrendLine} onCheckedChange={(v) => onChange({ showTrendLine: !!v })} />
         <Label htmlFor="showTrend" className="text-sm">Show Trend Line</Label>
       </div>
 
       <div className="flex items-center gap-2">
-        <Checkbox
-          id="showSeasonal"
-          checked={filters.showSeasonal}
-          onCheckedChange={(v) => onChange({ showSeasonal: !!v })}
-        />
+        <Checkbox id="showSeasonal" checked={filters.showSeasonal} onCheckedChange={(v) => onChange({ showSeasonal: !!v })} />
         <Label htmlFor="showSeasonal" className="text-sm">Show Seasonal Analysis</Label>
       </div>
 
@@ -181,7 +154,7 @@ export function TimeSeriesControls({
         <DownloadButton onClick={onDownloadData} label="Data CSV" />
         <DownloadButton onClick={onDownloadTable} label="Table CSV" />
         <Button variant="outline" size="sm" onClick={onReset}>
-          <RotateCcw className="w-4 h-4 mr-1" /> Reset
+          <RotateCcw className="mr-1 h-4 w-4" /> Reset
         </Button>
       </div>
     </div>

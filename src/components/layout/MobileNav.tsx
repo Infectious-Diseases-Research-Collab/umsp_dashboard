@@ -17,11 +17,13 @@ export function MobileNav() {
   const pathname = usePathname();
 
   return (
-    <div className="flex flex-col h-full text-white">
-      <div className="p-4 border-b border-white/10">
-        <span className="font-bold text-sm">IDRC Malaria GIS</span>
+    <div className="flex h-full flex-col bg-white text-foreground">
+      <div className="border-b border-border px-5 py-5">
+        <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">IDRC</p>
+        <p className="text-sm font-semibold">Surveillance Suite</p>
       </div>
-      <nav className="flex-1 py-4">
+
+      <nav className="flex-1 space-y-1.5 px-3 py-4">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -29,13 +31,11 @@ export function MobileNav() {
               key={item.href}
               href={item.href}
               className={cn(
-                'flex items-center gap-3 px-4 py-3 text-sm transition-all',
-                isActive
-                  ? 'bg-[#26A69A] text-white'
-                  : 'text-white/80 hover:bg-[#26A69A]/50 hover:text-white'
+                'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all',
+                isActive ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
               )}
             >
-              <item.icon className="w-5 h-5" />
+              <item.icon className="h-[18px] w-[18px]" />
               {item.label}
             </Link>
           );

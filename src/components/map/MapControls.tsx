@@ -1,7 +1,8 @@
 'use client';
 
+import { Fragment } from 'react';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { MultiSelect } from '@/components/shared/MultiSelect';
@@ -23,25 +24,15 @@ interface Props {
 
 export function MapControls({ filters, onChange, onReset, regions, sites, yearRange, quarters, onDownloadCsv }: Props) {
   return (
-    <div className="space-y-4 p-4 bg-white rounded-lg border shadow-sm overflow-y-auto max-h-[calc(100vh-160px)]">
+    <div className="app-panel max-h-[calc(100vh-160px)] space-y-4 overflow-y-auto rounded-2xl p-4">
       <div>
         <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Region</Label>
-        <MultiSelect
-          options={regions}
-          selected={filters.regions}
-          onChange={(v) => onChange({ regions: v })}
-          placeholder="All Regions"
-        />
+        <MultiSelect options={regions} selected={filters.regions} onChange={(v) => onChange({ regions: v })} placeholder="All Regions" />
       </div>
 
       <div>
         <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Sites</Label>
-        <MultiSelect
-          options={sites}
-          selected={filters.sites}
-          onChange={(v) => onChange({ sites: v })}
-          placeholder="All Sites"
-        />
+        <MultiSelect options={sites} selected={filters.sites} onChange={(v) => onChange({ sites: v })} placeholder="All Sites" />
       </div>
 
       <div>
@@ -61,26 +52,14 @@ export function MapControls({ filters, onChange, onReset, regions, sites, yearRa
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Year: {filters.yearRange[0]} - {filters.yearRange[1]}
           </Label>
-          <Slider
-            min={yearRange.min}
-            max={yearRange.max}
-            step={1}
-            value={filters.yearRange}
-            onValueChange={(v) => onChange({ yearRange: v as [number, number] })}
-            className="mt-2"
-          />
+          <Slider min={yearRange.min} max={yearRange.max} step={1} value={filters.yearRange} onValueChange={(v) => onChange({ yearRange: v as [number, number] })} className="mt-2" />
         </div>
       )}
 
       {filters.timeScale === 'Quarterly' && (
         <div>
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Quarters</Label>
-          <MultiSelect
-            options={quarters}
-            selected={filters.quarters}
-            onChange={(v) => onChange({ quarters: v })}
-            placeholder="Select quarters"
-          />
+          <MultiSelect options={quarters} selected={filters.quarters} onChange={(v) => onChange({ quarters: v })} placeholder="Select quarters" />
         </div>
       )}
 
@@ -90,12 +69,14 @@ export function MapControls({ filters, onChange, onReset, regions, sites, yearRa
           <SelectTrigger><SelectValue /></SelectTrigger>
           <SelectContent>
             {Object.entries(INDICATOR_GROUPS).map(([group, indicators]) => (
-              <div key={group}>
-                <div className="px-2 py-1 text-xs font-semibold text-muted-foreground">{group}</div>
-                {indicators.map((ind) => (
-                  <SelectItem key={ind} value={ind}>{ind}</SelectItem>
-                ))}
-              </div>
+              <Fragment key={group}>
+                <SelectGroup>
+                  <SelectLabel>{group}</SelectLabel>
+                  {indicators.map((ind) => (
+                    <SelectItem key={ind} value={ind}>{ind}</SelectItem>
+                  ))}
+                </SelectGroup>
+              </Fragment>
             ))}
           </SelectContent>
         </Select>
@@ -142,47 +123,20 @@ export function MapControls({ filters, onChange, onReset, regions, sites, yearRa
 
       {filters.overlayType === 'trends' && (
         <div>
-          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Trend Months: {filters.trendMonths}
-          </Label>
-          <Slider
-            min={3}
-            max={24}
-            step={1}
-            value={[filters.trendMonths]}
-            onValueChange={(v) => onChange({ trendMonths: v[0] })}
-            className="mt-2"
-          />
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Trend Months: {filters.trendMonths}</Label>
+          <Slider min={3} max={24} step={1} value={[filters.trendMonths]} onValueChange={(v) => onChange({ trendMonths: v[0] })} className="mt-2" />
         </div>
       )}
 
       {filters.overlayType === 'heatmap' && (
         <>
           <div>
-            <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Radius: {filters.heatmapRadius}
-            </Label>
-            <Slider
-              min={10}
-              max={50}
-              step={1}
-              value={[filters.heatmapRadius]}
-              onValueChange={(v) => onChange({ heatmapRadius: v[0] })}
-              className="mt-2"
-            />
+            <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Radius: {filters.heatmapRadius}</Label>
+            <Slider min={10} max={50} step={1} value={[filters.heatmapRadius]} onValueChange={(v) => onChange({ heatmapRadius: v[0] })} className="mt-2" />
           </div>
           <div>
-            <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Blur: {filters.heatmapBlur}
-            </Label>
-            <Slider
-              min={5}
-              max={30}
-              step={1}
-              value={[filters.heatmapBlur]}
-              onValueChange={(v) => onChange({ heatmapBlur: v[0] })}
-              className="mt-2"
-            />
+            <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Blur: {filters.heatmapBlur}</Label>
+            <Slider min={5} max={30} step={1} value={[filters.heatmapBlur]} onValueChange={(v) => onChange({ heatmapBlur: v[0] })} className="mt-2" />
           </div>
         </>
       )}
@@ -190,7 +144,7 @@ export function MapControls({ filters, onChange, onReset, regions, sites, yearRa
       <div className="flex gap-2 pt-2">
         <DownloadButton onClick={onDownloadCsv} label="CSV" />
         <Button variant="outline" size="sm" onClick={onReset}>
-          <RotateCcw className="w-4 h-4 mr-1" /> Reset
+          <RotateCcw className="mr-1 h-4 w-4" /> Reset
         </Button>
       </div>
     </div>

@@ -93,7 +93,7 @@ export function CsvUploader({ onUploadComplete }: Props) {
   }, [file, targetTable, mode, toast, onUploadComplete]);
 
   return (
-    <Card>
+    <Card className="app-panel">
       <CardHeader>
         <CardTitle className="text-lg">CSV Data Upload</CardTitle>
       </CardHeader>
@@ -123,7 +123,7 @@ export function CsvUploader({ onUploadComplete }: Props) {
 
         <div>
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">CSV File</Label>
-          <div className="border-2 border-dashed rounded-lg p-6 text-center hover:border-[#26A69A] transition-colors">
+          <div className="rounded-xl border-2 border-dashed border-border p-6 text-center transition-colors hover:border-primary/60">
             <input
               type="file"
               accept=".csv"

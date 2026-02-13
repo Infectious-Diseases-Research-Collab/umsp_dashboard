@@ -20,7 +20,7 @@ interface Props {
 
 export function RegionalSummaryTable({ data, loading }: Props) {
   return (
-    <Card>
+    <Card className="app-panel">
       <CardHeader>
         <CardTitle className="text-lg">Regional Summary</CardTitle>
       </CardHeader>

@@ -2,8 +2,8 @@
 
 export function Footer() {
   return (
-    <footer className="h-10 bg-white border-t border-[#F7A800]/30 flex items-center justify-center px-4 text-xs text-muted-foreground">
-      <p>IDRC Enhanced Malaria Surveillance Dashboard &middot; Ministry of Health Uganda &middot; Malaria Control Program</p>
+    <footer className="border-t border-border/60 bg-background/70 px-4 py-3 text-center text-xs text-muted-foreground backdrop-blur-sm">
+      <p>IDRC Enhanced Malaria Surveillance Dashboard · Ministry of Health Uganda · Malaria Control Program</p>
     </footer>
   );
 }

@@ -10,10 +10,10 @@ interface Props {
 
 export function MapStatsBar({ metric, siteCount, dataRange }: Props) {
   return (
-    <div className="flex flex-wrap gap-2 mb-2">
-      <Badge variant="secondary">{metric}</Badge>
-      <Badge variant="outline">{siteCount} sites</Badge>
-      <Badge variant="outline">{dataRange}</Badge>
+    <div className="mb-3 flex flex-wrap gap-2">
+      <Badge className="rounded-full bg-primary/15 text-primary hover:bg-primary/15" variant="secondary">{metric}</Badge>
+      <Badge variant="outline" className="rounded-full">{siteCount} sites</Badge>
+      <Badge variant="outline" className="rounded-full">{dataRange}</Badge>
     </div>
   );
 }

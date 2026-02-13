@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Activity, Loader2 } from 'lucide-react';
+import { Activity, Loader2, ShieldCheck, BarChart3, Map } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function LoginPage() {
@@ -81,96 +81,95 @@ export default function LoginPage() {
   const isSignIn = mode === 'signin';
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#00016B] via-[#102384] to-[#12306E] p-4 sm:p-6">
-      <Card className="w-full max-w-md border-white/20 bg-white/95 shadow-2xl backdrop-blur-sm">
-        <CardHeader className="space-y-4 pb-2 text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#26A69A] shadow-lg shadow-[#26A69A]/30">
-            <Activity className="h-7 w-7 text-white" />
+    <div className="min-h-screen bg-slate-100 p-4 md:p-8">
+      <div className="mx-auto grid min-h-[calc(100vh-2rem)] w-full max-w-6xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_22px_60px_rgba(30,41,59,0.18)] lg:grid-cols-2">
+        <section className="relative hidden lg:flex flex-col justify-between bg-gradient-to-br from-sky-700 via-cyan-700 to-teal-700 p-10 text-white">
+          <div>
+            <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15">
+              <Activity className="h-7 w-7" />
+            </div>
+            <h1 className="text-4xl font-semibold leading-tight">UMSP Surveillance Dashboard</h1>
+            <p className="mt-4 max-w-md text-white/85">
+              Explore trends, geospatial patterns, and surveillance quality metrics from one operational workspace.
+            </p>
           </div>
-          <CardTitle className="text-2xl tracking-tight">{isSignIn ? 'Welcome Back' : 'Create Your Account'}</CardTitle>
-          <CardDescription className="text-sm text-slate-600">
-            {isSignIn
-              ? 'Sign in to access the malaria surveillance dashboard'
-              : 'Create a new account to access the malaria surveillance dashboard'}
-          </CardDescription>
-        </CardHeader>
 
-        <CardContent className="space-y-6 pt-4">
-          <form
-            onSubmit={
-              isSignIn
-                ? handleSignIn
-                : (e) => {
-                    e.preventDefault();
-                    handleSignUp();
-                  }
-            }
-            className="space-y-4"
-          >
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm text-slate-700">
-                Email
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="h-11 border-slate-200 focus-visible:ring-[#26A69A]"
-              />
-            </div>
+          <div className="space-y-3 text-sm text-white/90">
+            <div className="flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> Secure authenticated access</div>
+            <div className="flex items-center gap-2"><BarChart3 className="h-4 w-4" /> Temporal and indicator analytics</div>
+            <div className="flex items-center gap-2"><Map className="h-4 w-4" /> Interactive site-level mapping</div>
+          </div>
+        </section>
 
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm text-slate-700">
-                Password
-              </Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="h-11 border-slate-200 focus-visible:ring-[#26A69A]"
-              />
-            </div>
+        <section className="flex items-center justify-center p-6 sm:p-10">
+          <Card className="w-full max-w-md border-0 bg-transparent shadow-none">
+            <CardHeader className="px-0 text-left">
+              <CardTitle className="text-3xl text-slate-900">{isSignIn ? 'Sign in' : 'Create account'}</CardTitle>
+              <CardDescription className="text-slate-600">
+                {isSignIn
+                  ? 'Use your credentials to access the dashboard.'
+                  : 'Create your credentials to access the dashboard.'}
+              </CardDescription>
+            </CardHeader>
 
-            {!isSignIn ? (
-              <div className="space-y-2">
-                <Label htmlFor="confirm-password" className="text-sm text-slate-700">
-                  Confirm Password
-                </Label>
-                <Input
-                  id="confirm-password"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required={!isSignIn}
-                  className="h-11 border-slate-200 focus-visible:ring-[#26A69A]"
-                />
-              </div>
-            ) : null}
+            <CardContent className="space-y-5 px-0">
+              <form
+                onSubmit={
+                  isSignIn
+                    ? handleSignIn
+                    : (e) => {
+                        e.preventDefault();
+                        handleSignUp();
+                      }
+                }
+                className="space-y-4"
+              >
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-slate-700">Email</Label>
+                  <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-11 bg-white" />
+                </div>
 
-            <Button type="submit" className="h-11 w-full bg-[#26A69A] text-white hover:bg-[#1f8f84]" disabled={isLoading}>
-              {loadingAction === mode ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              {isSignIn ? 'Sign In' : 'Create Account'}
-            </Button>
-          </form>
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-slate-700">Password</Label>
+                  <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="h-11 bg-white" />
+                </div>
 
-          <p className="text-center text-sm text-slate-600">
-            {isSignIn ? "Don't have an account?" : 'Already have an account?'}{' '}
-            <Button
-              type="button"
-              variant="link"
-              className="h-auto px-0 text-[#0b7d73]"
-              onClick={() => setMode(isSignIn ? 'signup' : 'signin')}
-              disabled={isLoading}
-            >
-              {isSignIn ? 'Sign up' : 'Sign in'}
-            </Button>
-          </p>
-        </CardContent>
-      </Card>
+                {!isSignIn ? (
+                  <div className="space-y-2">
+                    <Label htmlFor="confirm-password" className="text-slate-700">Confirm Password</Label>
+                    <Input
+                      id="confirm-password"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                      className="h-11 bg-white"
+                    />
+                  </div>
+                ) : null}
+
+                <Button type="submit" className="h-11 w-full" disabled={isLoading}>
+                  {loadingAction === mode ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  {isSignIn ? 'Sign In' : 'Create Account'}
+                </Button>
+              </form>
+
+              <p className="text-center text-sm text-slate-600">
+                {isSignIn ? "Don't have an account?" : 'Already have an account?'}{' '}
+                <Button
+                  type="button"
+                  variant="link"
+                  className="h-auto px-0"
+                  onClick={() => setMode(isSignIn ? 'signup' : 'signin')}
+                  disabled={isLoading}
+                >
+                  {isSignIn ? 'Sign up' : 'Sign in'}
+                </Button>
+              </p>
+            </CardContent>
+          </Card>
+        </section>
+      </div>
     </div>
   );
 }

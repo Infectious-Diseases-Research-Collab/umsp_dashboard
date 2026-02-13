@@ -147,7 +147,7 @@ export default function TimeSeriesPage() {
           title={`Overall ${filters.metric}`}
           value={formatNumber(overallMetric, 2)}
           icon={TrendingUp}
-          color="#26A69A"
+          color="#0f8f97"
           loading={loading}
         />
 

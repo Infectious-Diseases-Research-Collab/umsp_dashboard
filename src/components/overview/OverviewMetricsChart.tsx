@@ -44,7 +44,7 @@ export function OverviewMetricsChart({ data, loading }: Props) {
 
   if (loading || !chartData) {
     return (
-      <Card>
+      <Card className="app-panel">
         <CardHeader><CardTitle className="text-lg">Quick Metrics Overview</CardTitle></CardHeader>
         <CardContent><Skeleton className="h-[400px] w-full" /></CardContent>
       </Card>
@@ -52,7 +52,7 @@ export function OverviewMetricsChart({ data, loading }: Props) {
   }
 
   return (
-    <Card>
+    <Card className="app-panel">
       <CardHeader>
         <CardTitle className="text-lg">Quick Metrics Overview (Last 3 Years)</CardTitle>
       </CardHeader>
@@ -65,7 +65,7 @@ export function OverviewMetricsChart({ data, loading }: Props) {
               type: 'scatter',
               mode: 'lines',
               name: 'Incidence per 1000',
-              line: { color: '#E31A1C' },
+              line: { color: '#e4662d' },
               yaxis: 'y',
             },
             {
@@ -74,7 +74,7 @@ export function OverviewMetricsChart({ data, loading }: Props) {
               type: 'scatter',
               mode: 'lines',
               name: 'TPR',
-              line: { color: '#1F78B4' },
+              line: { color: '#1b7ea9' },
               yaxis: 'y2',
             },
             {
@@ -82,7 +82,7 @@ export function OverviewMetricsChart({ data, loading }: Props) {
               y: chartData.visits,
               type: 'bar',
               name: 'Avg Visits',
-              marker: { color: '#B2DF8A', opacity: 0.5 },
+              marker: { color: '#3fb58b', opacity: 0.5 },
               yaxis: 'y3',
             },
           ]}

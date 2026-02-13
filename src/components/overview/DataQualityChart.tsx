@@ -15,7 +15,7 @@ interface Props {
 export function DataQualityChart({ data, loading }: Props) {
   if (loading) {
     return (
-      <Card>
+      <Card className="app-panel">
         <CardHeader><CardTitle className="text-lg">Data Quality Status</CardTitle></CardHeader>
         <CardContent><Skeleton className="h-[300px] w-full" /></CardContent>
       </Card>
@@ -26,7 +26,7 @@ export function DataQualityChart({ data, loading }: Props) {
   const completeness = (data ?? []).map((d) => d.completeness);
 
   return (
-    <Card>
+    <Card className="app-panel">
       <CardHeader>
         <CardTitle className="text-lg">Data Quality Status</CardTitle>
       </CardHeader>
@@ -38,7 +38,7 @@ export function DataQualityChart({ data, loading }: Props) {
               y: completeness,
               type: 'scatter',
               mode: 'lines+markers',
-              line: { color: '#26A69A', width: 2 },
+              line: { color: '#0f8f97', width: 2 },
               marker: { size: 4 },
               name: 'Completeness %',
             },

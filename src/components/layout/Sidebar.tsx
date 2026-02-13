@@ -26,16 +26,18 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="hidden lg:flex w-64 flex-col bg-[#1A237E] text-white min-h-screen">
-      <div className="p-4 border-b border-white/10">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-[#26A69A] flex items-center justify-center">
-            <Activity className="w-5 h-5 text-white" />
-          </div>
-          <span className="font-bold text-sm">IDRC Malaria GIS</span>
-        </Link>
-      </div>
-      <nav className="flex-1 py-4">
+    <aside className="hidden w-72 shrink-0 flex-col rounded-2xl border border-border/70 bg-white p-3 shadow-sm lg:flex">
+      <Link href="/" className="mb-3 flex items-center gap-3 rounded-xl px-3 py-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+          <Activity className="h-5 w-5" />
+        </div>
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.22em] text-muted-foreground">IDRC</p>
+          <p className="text-sm font-semibold text-foreground">Surveillance Suite</p>
+        </div>
+      </Link>
+
+      <nav className="flex-1 space-y-1.5 px-1">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -43,27 +45,26 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                'flex items-center gap-3 px-4 py-3 text-sm transition-all',
+                'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all',
                 isActive
-                  ? 'bg-[#26A69A] text-white border-l-4 border-[#F7A800]'
-                  : 'text-white/80 hover:bg-[#26A69A]/50 hover:text-white border-l-4 border-transparent'
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
               )}
             >
-              <item.icon className="w-5 h-5" />
+              <item.icon className="h-[18px] w-[18px]" />
               {item.label}
             </Link>
           );
         })}
       </nav>
-      <div className="p-4 border-t border-white/10">
-        <button
-          onClick={handleSignOut}
-          className="flex items-center gap-3 px-4 py-3 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-md w-full transition-all"
-        >
-          <LogOut className="w-5 h-5" />
-          Sign Out
-        </button>
-      </div>
+
+      <button
+        onClick={handleSignOut}
+        className="mt-2 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground"
+      >
+        <LogOut className="h-[18px] w-[18px]" />
+        Sign Out
+      </button>
     </aside>
   );
 }
