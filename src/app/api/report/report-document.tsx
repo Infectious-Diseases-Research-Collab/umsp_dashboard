@@ -40,6 +40,7 @@ export function ReportDocument({ data }: { data: ReportData }) {
     monthly: 'Monthly', quarterly: 'Quarterly', annual: 'Annual',
     regional: 'Regional', site: 'Site',
   }[data.reportType] || data.reportType;
+  const avgTprPercent = data.avgTpr * 100;
 
   return (
     <Document>
@@ -63,7 +64,7 @@ export function ReportDocument({ data }: { data: ReportData }) {
               </View>
               <View style={styles.kpiItem}>
                 <Text style={styles.kpiLabel}>Average TPR</Text>
-                <Text style={styles.kpiValue}>{data.avgTpr.toFixed(1)}%</Text>
+                <Text style={styles.kpiValue}>{avgTprPercent.toFixed(1)}%</Text>
               </View>
               <View style={styles.kpiItem}>
                 <Text style={styles.kpiLabel}>Total Records</Text>
@@ -83,7 +84,7 @@ export function ReportDocument({ data }: { data: ReportData }) {
             <Text style={styles.sectionTitle}>Key Performance Indicators</Text>
             <Text style={styles.subTitle}>National Averages</Text>
             <Text style={styles.text}>Mean incidence rate: {data.avgIncidence.toFixed(2)} per 1,000 PY</Text>
-            <Text style={styles.text}>Mean TPR: {data.avgTpr.toFixed(2)}%</Text>
+            <Text style={styles.text}>Mean TPR: {avgTprPercent.toFixed(2)}%</Text>
             <Text style={styles.text}>Unique reporting sites: {data.totalSites}</Text>
             <Text style={styles.text}>Active sites: {data.activeSites}</Text>
           </View>
@@ -102,7 +103,7 @@ export function ReportDocument({ data }: { data: ReportData }) {
               <View key={i} style={styles.tableRow}>
                 <Text style={styles.tableCell}>{r.region}</Text>
                 <Text style={styles.tableCell}>{r.avgIncidence.toFixed(1)}</Text>
-                <Text style={styles.tableCell}>{r.avgTpr.toFixed(1)}%</Text>
+                <Text style={styles.tableCell}>{(r.avgTpr * 100).toFixed(1)}%</Text>
               </View>
             ))}
           </View>

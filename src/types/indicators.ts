@@ -1,7 +1,7 @@
 export const INDICATOR_DB_COLUMNS = {
   'Malaria Incidence per 1000': 'malaria_incidence_per_1000_py',
   'TPR': 'tpr_cases_all',
-  'Laboratory Confirmed Malaria Cases': 'tpr_cases_per_ca',
+  'TPR (CA)': 'tpr_cases_per_ca',
   'Number of Visits': 'visits',
   'Suspected Malaria Cases': 'malariasuspected',
   'Proportion Suspected Malaria': 'propsuspected_per_total_visits',
@@ -18,7 +18,7 @@ export const INDICATOR_GROUPS = {
   'Malaria Burden': [
     'Malaria Incidence per 1000',
     'TPR',
-    'Laboratory Confirmed Malaria Cases',
+    'TPR (CA)',
   ] as IndicatorLabel[],
   'Health Seeking': [
     'Number of Visits',

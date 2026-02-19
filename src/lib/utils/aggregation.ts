@@ -36,8 +36,8 @@ export function aggregateByMetric(
 
 /**
  * Weighted regional aggregation matching the R logic:
- * - Incidence, TPR: simple mean
- * - Lab Cases, Visits, Suspected: sum
+ * - Incidence, TPR, TPR (CA): simple mean
+ * - Visits, Suspected: sum
  * - Proportions: weighted average by visits
  */
 export function aggregateRegional(
@@ -51,9 +51,9 @@ export function aggregateRegional(
   switch (indicator) {
     case 'Malaria Incidence per 1000':
     case 'TPR':
+    case 'TPR (CA)':
       return valid.reduce((sum, r) => sum + (r[col] as number), 0) / valid.length;
 
-    case 'Laboratory Confirmed Malaria Cases':
     case 'Number of Visits':
     case 'Suspected Malaria Cases':
       return valid.reduce((sum, r) => sum + (r[col] as number), 0);

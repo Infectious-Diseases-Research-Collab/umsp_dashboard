@@ -8,7 +8,7 @@ BEGIN
   RETURN QUERY
   SELECT m.region, COUNT(DISTINCT m.site),
     ROUND(AVG(m.malaria_incidence_per_1000_py)::NUMERIC, 1)::DOUBLE PRECISION,
-    ROUND(AVG(m.tpr_cases_all)::NUMERIC, 1)::DOUBLE PRECISION,
+    ROUND(AVG(m.tpr_cases_all)::NUMERIC, 3)::DOUBLE PRECISION,
     SUM(m.visits)::BIGINT
   FROM umsp_monthly_data m
   WHERE (p_year IS NULL OR m.year = p_year)

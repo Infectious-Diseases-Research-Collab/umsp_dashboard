@@ -53,7 +53,7 @@ export function ReportPreview({ reportType, sections, stats }: Props) {
             <p>Total Sites: <strong>{stats.totalSites}</strong></p>
             <p>Active Sites: <strong>{stats.activeSites}</strong></p>
             <p>Average Incidence: <strong>{stats.avgIncidence.toFixed(1)}</strong> per 1,000 PY</p>
-            <p>Average TPR: <strong>{stats.avgTpr.toFixed(1)}</strong></p>
+            <p>Average TPR: <strong>{(stats.avgTpr * 100).toFixed(1)}%</strong></p>
             <p>Date Range: <strong>{stats.dateRange}</strong></p>
             <p>Total Records: <strong>{stats.totalRecords.toLocaleString()}</strong></p>
           </div>

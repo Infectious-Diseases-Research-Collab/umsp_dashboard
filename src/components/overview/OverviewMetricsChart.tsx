@@ -37,7 +37,7 @@ export function OverviewMetricsChart({ data, loading }: Props) {
     return {
       dates: sortedMonths,
       incidence: sortedMonths.map((m) => avg(byMonth[m].incidence)),
-      tpr: sortedMonths.map((m) => avg(byMonth[m].tpr)),
+      tpr: sortedMonths.map((m) => avg(byMonth[m].tpr) * 100),
       visits: sortedMonths.map((m) => avg(byMonth[m].visits)),
     };
   }, [data]);
@@ -73,7 +73,7 @@ export function OverviewMetricsChart({ data, loading }: Props) {
               y: chartData.tpr,
               type: 'scatter',
               mode: 'lines',
-              name: 'TPR',
+              name: 'TPR (%)',
               line: { color: '#1b7ea9' },
               yaxis: 'y2',
             },
@@ -92,7 +92,7 @@ export function OverviewMetricsChart({ data, loading }: Props) {
             xaxis: { title: 'Date', tickangle: -45 },
             yaxis: { title: 'Incidence per 1000', side: 'left' },
             yaxis2: {
-              title: 'TPR',
+              title: 'TPR (%)',
               overlaying: 'y',
               side: 'right',
               showgrid: false,
