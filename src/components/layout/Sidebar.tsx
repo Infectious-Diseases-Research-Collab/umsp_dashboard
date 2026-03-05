@@ -28,7 +28,7 @@ export function Sidebar() {
         </div>
         <div>
           <p className="text-[11px] uppercase tracking-[0.22em] text-muted-foreground">IDRC</p>
-          <p className="text-sm font-semibold text-foreground">Surveillance Suite</p>
+          <p className="text-sm font-semibold text-foreground">Uganda Malaria Surveillance Programme</p>
         </div>
       </Link>
 

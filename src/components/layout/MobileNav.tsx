@@ -16,7 +16,7 @@ export function MobileNav() {
     <div className="flex h-full flex-col bg-white text-foreground">
       <div className="border-b border-border px-5 py-5">
         <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">IDRC</p>
-        <p className="text-sm font-semibold">Surveillance Suite</p>
+        <p className="text-sm font-semibold">Uganda Malaria Surveillance Programme</p>
       </div>
 
       <nav className="flex-1 space-y-1.5 px-3 py-4">

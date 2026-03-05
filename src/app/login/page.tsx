@@ -7,8 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Activity, Loader2, ShieldCheck, BarChart3, Map } from 'lucide-react';
+import { Activity, Loader2, ShieldCheck, BarChart3, Map, Building2, Calendar } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useSupabaseQuery } from '@/lib/hooks/use-supabase-query';
+import { fetchDistinctSites } from '@/lib/queries/monthly-data';
+import { fetchActiveSiteNames } from '@/lib/queries/active-sites';
+import { fetchOverviewStats } from '@/lib/queries/overview';
+import { formatDate } from '@/lib/utils/format';
+import { ValueBox } from '@/components/overview/ValueBox';
 
 type AuthMode = 'signin' | 'signup' | 'forgot' | 'reset' | 'verify';
 
@@ -20,6 +26,9 @@ export default function LoginPage() {
   const [loadingAction, setLoadingAction] = useState<'signin' | 'signup' | 'forgot' | 'reset' | 'verify' | null>(null);
   const router = useRouter();
   const { toast } = useToast();
+  const { data: allSites, loading: allSitesLoading } = useSupabaseQuery(() => fetchDistinctSites());
+  const { data: activeSites, loading: activeSitesLoading } = useSupabaseQuery(() => fetchActiveSiteNames());
+  const { data: stats, loading: statsLoading } = useSupabaseQuery(() => fetchOverviewStats());
 
   useEffect(() => {
     const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
@@ -160,6 +169,30 @@ export default function LoginPage() {
             <div className="flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> Secure authenticated access</div>
             <div className="flex items-center gap-2"><BarChart3 className="h-4 w-4" /> Temporal and indicator analytics</div>
             <div className="flex items-center gap-2"><Map className="h-4 w-4" /> Interactive site-level mapping</div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3">
+            <ValueBox
+              title="Total Sites"
+              value={allSites?.length ?? '-'}
+              icon={Building2}
+              color="#0f8f97"
+              loading={allSitesLoading}
+            />
+            <ValueBox
+              title="Active Sites"
+              value={activeSites?.length ?? '-'}
+              icon={Activity}
+              color="#2e9f74"
+              loading={activeSitesLoading}
+            />
+            <ValueBox
+              title="Latest Date"
+              value={stats?.latestDate ? formatDate(stats.latestDate) : '-'}
+              icon={Calendar}
+              color="#df8d2f"
+              loading={statsLoading}
+            />
           </div>
         </section>
 

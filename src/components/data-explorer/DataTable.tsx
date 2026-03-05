@@ -4,17 +4,14 @@ import { useState, useMemo } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
-  getFilteredRowModel,
   getSortedRowModel,
   getPaginationRowModel,
   flexRender,
   ColumnDef,
   SortingState,
-  ColumnFiltersState,
 } from '@tanstack/react-table';
 import { UmspMonthlyData } from '@/types/database';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ArrowUpDown } from 'lucide-react';
@@ -26,7 +23,6 @@ interface Props {
 
 const ALL_COLUMNS: { key: keyof UmspMonthlyData; label: string }[] = [
   { key: 'site', label: 'Site' },
-  { key: 'region', label: 'Region' },
   { key: 'district', label: 'District' },
   { key: 'monthyear', label: 'Month/Year' },
   { key: 'quarter', label: 'Quarter' },
@@ -43,7 +39,6 @@ const ALL_COLUMNS: { key: keyof UmspMonthlyData; label: string }[] = [
 
 export function DataTable({ data, visibleColumns }: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const columns = useMemo<ColumnDef<UmspMonthlyData>[]>(() => {
     return ALL_COLUMNS
@@ -73,11 +68,9 @@ export function DataTable({ data, visibleColumns }: Props) {
   const table = useReactTable({
     data,
     columns,
-    state: { sorting, columnFilters },
+    state: { sorting },
     onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     initialState: { pagination: { pageSize: 25 } },
@@ -86,21 +79,8 @@ export function DataTable({ data, visibleColumns }: Props) {
   return (
     <div className="space-y-4">
       <Badge variant="outline">
-        Showing {table.getFilteredRowModel().rows.length} of {data.length} records
+        Showing {data.length} records
       </Badge>
-
-      {/* Column filters */}
-      <div className="flex flex-wrap gap-2">
-        {table.getAllColumns().filter((col) => col.getCanFilter()).map((column) => (
-          <Input
-            key={column.id}
-            placeholder={`Filter ${column.id}...`}
-            value={(column.getFilterValue() as string) ?? ''}
-            onChange={(e) => column.setFilterValue(e.target.value)}
-            className="w-40 h-8 text-xs"
-          />
-        ))}
-      </div>
 
       <div className="rounded-md border overflow-x-auto">
         <Table>

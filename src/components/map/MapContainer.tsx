@@ -157,7 +157,6 @@ export function MapContainerComponent({
     <Popup>
       <div className="text-sm">
         <p className="font-bold text-[#26A69A]">{s.site}</p>
-        <p>Region: {s.region}</p>
         <p>District: {s.district}</p>
         <p>{metric}: <strong>{formatNumber(s.value, 2)}</strong></p>
         <p>Data points: {s.count}</p>
@@ -272,7 +271,6 @@ export function MapContainerComponent({
             >
               <Popup>
                 <p className="font-bold text-[#26A69A]">{t.site}</p>
-                <p>Region: {t.region}</p>
                 <p>Trend: {t.arrow} {t.direction}</p>
                 <p>Slope: {t.slope.toFixed(3)}</p>
               </Popup>

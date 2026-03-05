@@ -2,8 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { Building2, Activity, Calendar, Download, Table as TableIcon } from 'lucide-react';
-import { ValueBox } from '@/components/overview/ValueBox';
+import { Download, Table as TableIcon } from 'lucide-react';
 import { MultiSelect } from '@/components/shared/MultiSelect';
 import { DataTable } from '@/components/data-explorer/DataTable';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
@@ -18,13 +17,12 @@ import {
   fetchDistinctQuarters,
   fetchYearRange,
 } from '@/lib/queries/monthly-data';
-import { fetchActiveSiteNames } from '@/lib/queries/active-sites';
-import { fetchOverviewStats } from '@/lib/queries/overview';
 import { fetchTimeSeriesData } from '@/lib/queries/time-series';
 import { fetchMapData } from '@/lib/queries/map-data';
 import { downloadCsv } from '@/lib/utils/csv-export';
 import { formatDate } from '@/lib/utils/format';
 import { INDICATOR_DB_COLUMNS, INDICATOR_GROUPS, IndicatorLabel } from '@/types/indicators';
+import { getColorsForGroups } from '@/lib/utils/color-palette';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 const MapContainerComponent = dynamic(
@@ -53,42 +51,49 @@ function getPeriodLabel(key: string, timeScale: TimeScale): string {
   return formatDate(key);
 }
 
-function aggregateMetricByPeriod(
+function monthSequence(start: string, end: string): string[] {
+  if (!start || !end) return [];
+  const result: string[] = [];
+  const cursor = new Date(`${start}T00:00:00`);
+  const last = new Date(`${end}T00:00:00`);
+  if (Number.isNaN(cursor.getTime()) || Number.isNaN(last.getTime())) return [];
+
+  cursor.setDate(1);
+  last.setDate(1);
+  while (cursor <= last) {
+    result.push(cursor.toISOString().split('T')[0]);
+    cursor.setMonth(cursor.getMonth() + 1);
+  }
+  return result;
+}
+
+function periodKey(row: Record<string, unknown>, timeScale: TimeScale): string {
+  if (timeScale === 'Annual') return String(row.year);
+  if (timeScale === 'Quarterly') return String(row.quarter);
+  return String(row.monthyear);
+}
+
+function metricSeriesForSite(
   rows: Record<string, unknown>[],
+  periods: string[],
   metric: IndicatorLabel,
   timeScale: TimeScale
-): { x: string[]; y: Array<number | null> } {
+): Array<number | null> {
   const column = INDICATOR_DB_COLUMNS[metric];
   const grouped = new Map<string, number[]>();
 
   for (const row of rows) {
-    const period =
-      timeScale === 'Annual'
-        ? String(row.year)
-        : timeScale === 'Quarterly'
-          ? String(row.quarter)
-          : String(row.monthyear);
-
+    const key = periodKey(row, timeScale);
     const value = row[column] as number | null;
     if (value == null || !isFinite(value)) continue;
-
-    if (!grouped.has(period)) grouped.set(period, []);
-    grouped.get(period)?.push(value);
+    if (!grouped.has(key)) grouped.set(key, []);
+    grouped.get(key)?.push(value);
   }
 
-  const keys = Array.from(grouped.keys()).sort((a, b) => {
-    if (timeScale === 'Annual') return Number(a) - Number(b);
-    if (timeScale === 'Quarterly') return quarterSortKey(a) - quarterSortKey(b);
-    return a.localeCompare(b);
+  return periods.map((key) => {
+    const vals = grouped.get(key) ?? [];
+    return vals.length ? vals.reduce((sum, v) => sum + v, 0) / vals.length : null;
   });
-
-  return {
-    x: keys.map((k) => getPeriodLabel(k, timeScale)),
-    y: keys.map((k) => {
-      const vals = grouped.get(k) ?? [];
-      return vals.length ? vals.reduce((sum, v) => sum + v, 0) / vals.length : null;
-    }),
-  };
 }
 
 export default function DashboardPage() {
@@ -102,9 +107,7 @@ export default function DashboardPage() {
   const [viewType, setViewType] = useState<ViewType>('Chart');
   const [showRawData, setShowRawData] = useState(false);
 
-  const { data: allSites, loading: sitesLoading } = useSupabaseQuery(() => fetchDistinctSites());
-  const { data: activeSites, loading: activeSitesLoading } = useSupabaseQuery(() => fetchActiveSiteNames());
-  const { data: overviewStats, loading: overviewLoading } = useSupabaseQuery(() => fetchOverviewStats());
+  const { data: allSites } = useSupabaseQuery(() => fetchDistinctSites());
   const { data: monthyears } = useSupabaseQuery(() => fetchDistinctMonthyears());
   const { data: quarters } = useSupabaseQuery(() => fetchDistinctQuarters());
   const { data: years } = useSupabaseQuery(() => fetchYearRange());
@@ -170,19 +173,16 @@ export default function DashboardPage() {
     [...queryDeps]
   );
 
-  const chartSeries = useMemo(() => {
-    const rows = (tableRows ?? []) as unknown as Record<string, unknown>[];
-    const primary = aggregateMetricByPeriod(rows, primaryMetric, timeScale);
-    const secondary =
-      secondaryMetric !== 'None'
-        ? aggregateMetricByPeriod(rows, secondaryMetric, timeScale)
-        : null;
-
-    return { primary, secondary };
-  }, [tableRows, primaryMetric, secondaryMetric, timeScale]);
+  const periodKeys = useMemo(() => {
+    if (timeScale === 'Monthly') return monthSequence(normalizedMonthRange[0], normalizedMonthRange[1]);
+    if (timeScale === 'Quarterly') return quarterSelection;
+    const [start, end] = normalizedYearRange;
+    return Array.from({ length: Math.max(0, end - start + 1) }, (_, i) => String(start + i));
+  }, [timeScale, normalizedMonthRange, quarterSelection, normalizedYearRange]);
+  const periodLabels = useMemo(() => periodKeys.map((key) => getPeriodLabel(key, timeScale)), [periodKeys, timeScale]);
 
   const selectedColumns = useMemo(() => {
-    const base = ['site', 'region', 'district', 'monthyear', 'quarter', 'year'];
+    const base = ['site', 'district', 'monthyear', 'quarter', 'year'];
     const p = INDICATOR_DB_COLUMNS[primaryMetric];
     const columns = new Set<string>([...base, p]);
     if (secondaryMetric !== 'None') {
@@ -192,6 +192,45 @@ export default function DashboardPage() {
   }, [primaryMetric, secondaryMetric]);
 
   const hasSecondMetric = secondaryMetric !== 'None' && secondaryMetric !== primaryMetric;
+  const chartTraces = useMemo(() => {
+    const rows = (tableRows ?? []) as unknown as Record<string, unknown>[];
+    const selected = selectedSites.length
+      ? selectedSites
+      : Array.from(new Set(rows.map((row) => String(row.site)))).sort((a, b) => a.localeCompare(b));
+    const colors = getColorsForGroups(selected);
+
+    return selected.flatMap((site) => {
+      const siteRows = rows.filter((row) => String(row.site) === site);
+      const primaryValues = metricSeriesForSite(siteRows, periodKeys, primaryMetric, timeScale);
+      const primaryTrace = {
+        type: 'scatter',
+        mode: 'lines+markers',
+        x: periodLabels,
+        y: primaryValues,
+        name: site,
+        line: { width: 2, color: colors[site] },
+        marker: { size: 5 },
+        yaxis: 'y',
+      };
+
+      if (!hasSecondMetric || secondaryMetric === 'None') return [primaryTrace];
+
+      const secondaryValues = metricSeriesForSite(siteRows, periodKeys, secondaryMetric, timeScale);
+      return [
+        primaryTrace,
+        {
+          type: 'scatter',
+          mode: 'lines+markers',
+          x: periodLabels,
+          y: secondaryValues,
+          name: `${site} (${secondaryMetric})`,
+          line: { width: 1.5, color: colors[site], dash: 'dot' as const },
+          marker: { size: 4 },
+          yaxis: 'y2',
+        },
+      ];
+    });
+  }, [tableRows, selectedSites, periodKeys, periodLabels, primaryMetric, secondaryMetric, timeScale, hasSecondMetric]);
 
   const handleDownloadRaw = useCallback(() => {
     const sourceRows = viewType === 'Map' ? (mapRows ?? []) : (tableRows ?? []);
@@ -289,35 +328,10 @@ export default function DashboardPage() {
     );
   };
 
-  const primaryLoading = sitesLoading || activeSitesLoading || overviewLoading;
   const viewLoading = viewType === 'Map' ? mapLoading : tableLoading;
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <ValueBox
-          title="Total Sites"
-          value={allSites?.length ?? '-'}
-          icon={Building2}
-          color="#0f8f97"
-          loading={primaryLoading}
-        />
-        <ValueBox
-          title="Active Sites"
-          value={activeSites?.length ?? '-'}
-          icon={Activity}
-          color="#2e9f74"
-          loading={primaryLoading}
-        />
-        <ValueBox
-          title="Latest Date"
-          value={overviewStats?.latestDate ? formatDate(overviewStats.latestDate) : '-'}
-          icon={Calendar}
-          color="#df8d2f"
-          loading={primaryLoading}
-        />
-      </div>
-
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Workspace Filters</CardTitle>
@@ -418,35 +432,10 @@ export default function DashboardPage() {
                   <p className="py-10 text-center text-muted-foreground">No data available for these filters.</p>
                 ) : (
                   <Plot
-                    data={[
-                      {
-                        type: 'scatter',
-                        mode: 'lines+markers',
-                        x: chartSeries.primary.x,
-                        y: chartSeries.primary.y,
-                        name: primaryMetric,
-                        line: { width: 3, color: '#0f8f97' },
-                        marker: { size: 6 },
-                        yaxis: 'y',
-                      },
-                      ...(hasSecondMetric
-                        ? [
-                            {
-                              type: 'scatter',
-                              mode: 'lines+markers',
-                              x: chartSeries.secondary?.x ?? [],
-                              y: chartSeries.secondary?.y ?? [],
-                              name: secondaryMetric,
-                              line: { width: 3, color: '#df8d2f' },
-                              marker: { size: 6 },
-                              yaxis: 'y2',
-                            },
-                          ]
-                        : []),
-                    ]}
+                    data={chartTraces}
                     layout={{
                       height: 520,
-                      margin: { l: 55, r: hasSecondMetric ? 65 : 20, t: 30, b: 60 },
+                      margin: { l: 55, r: hasSecondMetric ? 80 : 20, t: 30, b: 80 },
                       xaxis: { title: timeScale === 'Annual' ? 'Year' : timeScale, tickangle: -35 },
                       yaxis: { title: primaryMetric },
                       ...(hasSecondMetric
@@ -458,7 +447,7 @@ export default function DashboardPage() {
                             },
                           }
                         : {}),
-                      legend: { orientation: 'h', y: -0.2 },
+                      legend: { orientation: 'h', y: -0.25 },
                     }}
                     config={{ responsive: true, displaylogo: false }}
                     style={{ width: '100%' }}
