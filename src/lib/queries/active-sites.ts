@@ -28,8 +28,9 @@ export async function fetchMappedActiveUmspSiteNames(): Promise<string[]> {
     .select('umsp_site')
     .order('umsp_site');
 
-  if (error) {
+  if (error || (data ?? []).length === 0) {
     // Fallback for environments where mapping table is not yet migrated
+    // or has not been populated yet.
     return fetchActiveSiteNames();
   }
 

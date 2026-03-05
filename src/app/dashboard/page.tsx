@@ -22,6 +22,7 @@ import { fetchTimeSeriesData } from '@/lib/queries/time-series';
 import { fetchMapData } from '@/lib/queries/map-data';
 import { downloadCsv } from '@/lib/utils/csv-export';
 import { formatDate } from '@/lib/utils/format';
+import { matchActiveSite } from '@/lib/utils/indicators';
 import { INDICATOR_DB_COLUMNS, INDICATOR_GROUPS, IndicatorLabel } from '@/types/indicators';
 import { getColorsForGroups } from '@/lib/utils/color-palette';
 
@@ -126,8 +127,7 @@ export default function DashboardPage() {
   const availableSites = useMemo(() => {
     const all = allSites ?? [];
     if (siteScope === 'All Sites') return all;
-    const activeSet = new Set(activeSites ?? []);
-    return all.filter((site) => activeSet.has(site));
+    return all.filter((site) => matchActiveSite(site, activeSites ?? []));
   }, [allSites, activeSites, siteScope]);
   const effectiveSites = useMemo(
     () => (selectedSites.length ? selectedSites : (siteScope === 'Active Sites' ? availableSites : undefined)),
