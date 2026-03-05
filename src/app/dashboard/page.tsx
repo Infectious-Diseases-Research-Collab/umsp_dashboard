@@ -192,6 +192,7 @@ export default function DashboardPage() {
   }, [primaryMetric, secondaryMetric]);
 
   const hasSecondMetric = secondaryMetric !== 'None' && secondaryMetric !== primaryMetric;
+  const secondMetric: IndicatorLabel | null = hasSecondMetric ? secondaryMetric : null;
   const chartTraces = useMemo(() => {
     const rows = (tableRows ?? []) as unknown as Record<string, unknown>[];
     const selected = selectedSites.length
@@ -213,9 +214,9 @@ export default function DashboardPage() {
         yaxis: 'y',
       };
 
-      if (!hasSecondMetric || secondaryMetric === 'None') return [primaryTrace];
+      if (!secondMetric) return [primaryTrace];
 
-      const secondaryValues = metricSeriesForSite(siteRows, periodKeys, secondaryMetric, timeScale);
+      const secondaryValues = metricSeriesForSite(siteRows, periodKeys, secondMetric, timeScale);
       return [
         primaryTrace,
         {
@@ -223,14 +224,14 @@ export default function DashboardPage() {
           mode: 'lines+markers',
           x: periodLabels,
           y: secondaryValues,
-          name: `${site} (${secondaryMetric})`,
+          name: `${site} (${secondMetric})`,
           line: { width: 1.5, color: colors[site], dash: 'dot' as const },
           marker: { size: 4 },
           yaxis: 'y2',
         },
       ];
     });
-  }, [tableRows, selectedSites, periodKeys, periodLabels, primaryMetric, secondaryMetric, timeScale, hasSecondMetric]);
+  }, [tableRows, selectedSites, periodKeys, periodLabels, primaryMetric, secondMetric, timeScale]);
 
   const handleDownloadRaw = useCallback(() => {
     const sourceRows = viewType === 'Map' ? (mapRows ?? []) : (tableRows ?? []);
