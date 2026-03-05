@@ -2,6 +2,7 @@
 ALTER TABLE umsp_monthly_data ENABLE ROW LEVEL SECURITY;
 ALTER TABLE health_facility_coordinates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE active_sites ENABLE ROW LEVEL SECURITY;
+ALTER TABLE active_site_umsp_site_map ENABLE ROW LEVEL SECURITY;
 
 -- Admin helper function
 CREATE OR REPLACE FUNCTION is_admin()
@@ -18,6 +19,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE POLICY "Authenticated read umsp_monthly_data" ON umsp_monthly_data FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Authenticated read health_facility_coordinates" ON health_facility_coordinates FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Authenticated read active_sites" ON active_sites FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Authenticated read active_site_umsp_site_map" ON active_site_umsp_site_map FOR SELECT TO authenticated USING (true);
 
 -- Admin INSERT/UPDATE/DELETE
 CREATE POLICY "Admin insert umsp_monthly_data" ON umsp_monthly_data FOR INSERT TO authenticated WITH CHECK (is_admin());
@@ -31,3 +33,7 @@ CREATE POLICY "Admin delete health_facility_coordinates" ON health_facility_coor
 CREATE POLICY "Admin insert active_sites" ON active_sites FOR INSERT TO authenticated WITH CHECK (is_admin());
 CREATE POLICY "Admin update active_sites" ON active_sites FOR UPDATE TO authenticated USING (is_admin());
 CREATE POLICY "Admin delete active_sites" ON active_sites FOR DELETE TO authenticated USING (is_admin());
+
+CREATE POLICY "Admin insert active_site_umsp_site_map" ON active_site_umsp_site_map FOR INSERT TO authenticated WITH CHECK (is_admin());
+CREATE POLICY "Admin update active_site_umsp_site_map" ON active_site_umsp_site_map FOR UPDATE TO authenticated USING (is_admin());
+CREATE POLICY "Admin delete active_site_umsp_site_map" ON active_site_umsp_site_map FOR DELETE TO authenticated USING (is_admin());

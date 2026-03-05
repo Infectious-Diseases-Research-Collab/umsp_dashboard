@@ -17,7 +17,7 @@ import {
   fetchDistinctQuarters,
   fetchYearRange,
 } from '@/lib/queries/monthly-data';
-import { fetchActiveSiteNames } from '@/lib/queries/active-sites';
+import { fetchMappedActiveUmspSiteNames } from '@/lib/queries/active-sites';
 import { fetchTimeSeriesData } from '@/lib/queries/time-series';
 import { fetchMapData } from '@/lib/queries/map-data';
 import { downloadCsv } from '@/lib/utils/csv-export';
@@ -100,7 +100,7 @@ export default function DashboardPage() {
   const [showRawData, setShowRawData] = useState(false);
 
   const { data: allSites } = useSupabaseQuery(() => fetchDistinctSites());
-  const { data: activeSites } = useSupabaseQuery(() => fetchActiveSiteNames());
+  const { data: activeSites } = useSupabaseQuery(() => fetchMappedActiveUmspSiteNames());
   const { data: monthyears } = useSupabaseQuery(() => fetchDistinctMonthyears());
   const { data: quarters } = useSupabaseQuery(() => fetchDistinctQuarters());
   const { data: years } = useSupabaseQuery(() => fetchYearRange());

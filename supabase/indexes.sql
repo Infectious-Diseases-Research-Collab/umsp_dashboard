@@ -8,3 +8,5 @@ CREATE INDEX idx_monthly_region_monthyear ON umsp_monthly_data (region, monthyea
 CREATE INDEX idx_monthly_site_monthyear ON umsp_monthly_data (site, monthyear);
 CREATE INDEX idx_coords_site ON health_facility_coordinates (site);
 CREATE INDEX idx_active_site ON active_sites (site);
+CREATE INDEX idx_active_site_map_active_site_id ON active_site_umsp_site_map (active_site_id);
+CREATE INDEX idx_active_site_map_umsp_site ON active_site_umsp_site_map (umsp_site);

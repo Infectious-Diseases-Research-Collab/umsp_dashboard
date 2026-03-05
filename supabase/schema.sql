@@ -40,3 +40,14 @@ CREATE TABLE active_sites (
   site       TEXT NOT NULL UNIQUE,
   created_at TIMESTAMPTZ DEFAULT now()
 );
+
+-- Mapping between active_sites IDs and umsp_monthly_data site labels
+CREATE TABLE active_site_umsp_site_map (
+  id             BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  active_site_id BIGINT NOT NULL REFERENCES active_sites(id) ON DELETE CASCADE,
+  umsp_site      TEXT NOT NULL,
+  match_method   TEXT NOT NULL DEFAULT 'normalized_name',
+  created_at     TIMESTAMPTZ DEFAULT now(),
+  CONSTRAINT uq_active_site_map_active_site_id UNIQUE (active_site_id),
+  CONSTRAINT uq_active_site_map_umsp_site UNIQUE (umsp_site)
+);

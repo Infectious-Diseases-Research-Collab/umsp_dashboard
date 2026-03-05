@@ -16,11 +16,23 @@ export function getDbColumn(indicator: IndicatorLabel): IndicatorColumn {
 }
 
 /**
- * Match active sites by stripping " HC..." suffix and comparing uppercase.
+ * Build a canonical site key so labels can match across tables:
+ * e.g. "Aduku" == "Aduku HCIV" == "aduku-hciv".
+ */
+export function normalizeSiteName(value: string): string {
+  return value
+    .toUpperCase()
+    .replace(/\bHC\s*(II|III|IV|V)\b/g, '')
+    .replace(/\bHC\b/g, '')
+    .replace(/[^A-Z0-9]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * Match active sites via canonicalized name comparison.
  */
 export function matchActiveSite(siteName: string, activeSites: string[]): boolean {
-  const base = siteName.replace(/ HC.*/i, '').trim().toUpperCase();
-  return activeSites.some(
-    (active) => active.replace(/ HC.*/i, '').trim().toUpperCase() === base
-  );
+  const base = normalizeSiteName(siteName);
+  return activeSites.some((active) => normalizeSiteName(active) === base);
 }

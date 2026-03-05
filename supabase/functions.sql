@@ -16,6 +16,50 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql STABLE;
 
+-- Normalize site name for cross-table matching
+CREATE OR REPLACE FUNCTION normalize_site_name(p_site TEXT)
+RETURNS TEXT AS $$
+  SELECT trim(
+    regexp_replace(
+      regexp_replace(upper(COALESCE(p_site, '')), '\mHC\s*(II|III|IV|V)\M', '', 'g'),
+      '[^A-Z0-9]+', ' ', 'g'
+    )
+  );
+$$ LANGUAGE sql IMMUTABLE;
+
+-- Refresh ID-based mapping between active_sites and UMSP site names
+CREATE OR REPLACE FUNCTION refresh_active_site_umsp_site_map()
+RETURNS INTEGER AS $$
+DECLARE
+  inserted_count INTEGER := 0;
+BEGIN
+  DELETE FROM active_site_umsp_site_map;
+
+  WITH ranked_matches AS (
+    SELECT
+      a.id AS active_site_id,
+      m.site AS umsp_site,
+      ROW_NUMBER() OVER (
+        PARTITION BY a.id
+        ORDER BY length(m.site), m.site
+      ) AS rn
+    FROM active_sites a
+    JOIN (
+      SELECT DISTINCT site
+      FROM umsp_monthly_data
+    ) m
+      ON normalize_site_name(a.site) = normalize_site_name(m.site)
+  )
+  INSERT INTO active_site_umsp_site_map (active_site_id, umsp_site, match_method)
+  SELECT active_site_id, umsp_site, 'normalized_name'
+  FROM ranked_matches
+  WHERE rn = 1;
+
+  GET DIAGNOSTICS inserted_count = ROW_COUNT;
+  RETURN inserted_count;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- Data completeness over time
 CREATE OR REPLACE FUNCTION get_data_completeness()
 RETURNS TABLE (monthyear DATE, completeness DOUBLE PRECISION) AS $$
