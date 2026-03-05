@@ -2,16 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BarChart3, Map, Activity, Database, FileText, LogOut } from 'lucide-react';
+import { BarChart3, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/supabase/client';
 
 const navItems = [
-  { href: '/dashboard/overview', label: 'Overview', icon: BarChart3 },
-  { href: '/dashboard/map', label: 'Interactive Map', icon: Map },
-  { href: '/dashboard/time-series', label: 'Time Series', icon: Activity },
-  { href: '/dashboard/data-explorer', label: 'Data Explorer', icon: Database },
-  { href: '/dashboard/reports', label: 'Reports', icon: FileText },
+  { href: '/dashboard', label: 'Dashboard', icon: BarChart3 },
 ];
 
 export function Sidebar() {
@@ -28,7 +24,7 @@ export function Sidebar() {
     <aside className="hidden w-72 shrink-0 flex-col rounded-2xl border border-border/70 bg-white p-3 shadow-sm lg:flex">
       <Link href="/" className="mb-3 flex items-center gap-3 rounded-xl px-3 py-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-          <Activity className="h-5 w-5" />
+          <BarChart3 className="h-5 w-5" />
         </div>
         <div>
           <p className="text-[11px] uppercase tracking-[0.22em] text-muted-foreground">IDRC</p>

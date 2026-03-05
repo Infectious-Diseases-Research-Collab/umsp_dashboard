@@ -55,7 +55,7 @@ export async function middleware(request: NextRequest) {
 
   // If logged in user visits /login, redirect to dashboard
   if (pathname === '/login' && user) {
-    return NextResponse.redirect(new URL('/dashboard/overview', request.url));
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   return response;

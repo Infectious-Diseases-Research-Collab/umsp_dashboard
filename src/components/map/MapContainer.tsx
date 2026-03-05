@@ -50,6 +50,7 @@ interface Props {
   trendMonths: number;
   heatmapRadius: number;
   heatmapBlur: number;
+  scaleMode?: 'auto' | 'linear' | 'log';
   ugandaGeoJson?: GeoJSON.FeatureCollection;
 }
 
@@ -60,6 +61,7 @@ export function MapContainerComponent({
   aggMethod,
   basemap,
   trendMonths,
+  scaleMode = 'auto',
   ugandaGeoJson,
 }: Props) {
   // Aggregate data by site
@@ -79,8 +81,41 @@ export function MapContainerComponent({
     }).filter((s) => s.value != null && isFinite(s.value));
   }, [data, metric, aggMethod]);
 
-  const minVal = useMemo(() => Math.min(...siteAggregated.map((s) => s.value)), [siteAggregated]);
-  const maxVal = useMemo(() => Math.max(...siteAggregated.map((s) => s.value)), [siteAggregated]);
+  const minVal = useMemo(() => {
+    if (!siteAggregated.length) return 0;
+    return Math.min(...siteAggregated.map((s) => s.value));
+  }, [siteAggregated]);
+  const maxVal = useMemo(() => {
+    if (!siteAggregated.length) return 0;
+    return Math.max(...siteAggregated.map((s) => s.value));
+  }, [siteAggregated]);
+
+  const resolvedScaleMode = useMemo<'linear' | 'log'>(() => {
+    if (scaleMode === 'linear' || scaleMode === 'log') return scaleMode;
+    if (!siteAggregated.length) return 'linear';
+    const positive = siteAggregated.map((s) => s.value).filter((v) => v > 0);
+    if (!positive.length) return 'linear';
+    const minPositive = Math.min(...positive);
+    const maxPositive = Math.max(...positive);
+    const ratio = maxPositive / Math.max(minPositive, 1e-6);
+    return ratio >= 50 ? 'log' : 'linear';
+  }, [scaleMode, siteAggregated]);
+
+  const normalizedValue = useMemo(() => {
+    const positive = siteAggregated.map((s) => s.value).filter((v) => v > 0);
+    const minPositive = positive.length ? Math.min(...positive) : 1e-6;
+    const logMin = Math.log10(minPositive);
+    const logMax = Math.log10(Math.max(maxVal, minPositive));
+
+    return (value: number) => {
+      if (resolvedScaleMode === 'linear') {
+        return maxVal === minVal ? 0.5 : (value - minVal) / (maxVal - minVal);
+      }
+      const safe = Math.max(value, minPositive);
+      const transformed = Math.log10(safe);
+      return logMax === logMin ? 0.5 : (transformed - logMin) / (logMax - logMin);
+    };
+  }, [siteAggregated, minVal, maxVal, resolvedScaleMode]);
 
   const tileUrl = TILE_URLS[basemap] || TILE_URLS['OpenStreetMap.Mapnik'];
 
@@ -145,8 +180,9 @@ export function MapContainerComponent({
 
         {/* Circle Markers */}
         {overlayType === 'circles' && siteAggregated.map((s) => {
-          const radius = maxVal === minVal ? 8 : 5 + 15 * ((s.value - minVal) / (maxVal - minVal));
-          const color = interpolateColor(s.value, minVal, maxVal, YLOR_RD);
+          const normalized = normalizedValue(s.value);
+          const radius = 5 + 15 * normalized;
+          const color = interpolateColor(normalized, 0, 1, YLOR_RD);
           return (
             <CircleMarker
               key={s.site}
@@ -161,7 +197,7 @@ export function MapContainerComponent({
 
         {/* Heatmap - simplified as weighted circle markers since leaflet.heat requires special handling */}
         {overlayType === 'heatmap' && siteAggregated.map((s) => {
-          const intensity = maxVal === minVal ? 0.5 : (s.value - minVal) / (maxVal - minVal);
+          const intensity = normalizedValue(s.value);
           return (
             <CircleMarker
               key={s.site}
@@ -280,7 +316,13 @@ export function MapContainerComponent({
 
       {/* Legend */}
       {overlayType === 'circles' && siteAggregated.length > 0 && (
-        <MapLegend title={metric} min={minVal} max={maxVal} type="ylOrRd" />
+        <MapLegend
+          title={metric}
+          min={minVal}
+          max={maxVal}
+          type="ylOrRd"
+          subtitle={resolvedScaleMode === 'log' ? 'Logarithmic scale' : 'Linear scale'}
+        />
       )}
       {overlayType === 'trends' && trendData.length > 0 && (
         <MapLegend title="Trend Slope" min={trendMinSlope} max={trendMaxSlope} type="rdYlBu" />

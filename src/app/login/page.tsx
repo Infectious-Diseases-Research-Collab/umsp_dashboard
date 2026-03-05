@@ -48,7 +48,7 @@ export default function LoginPage() {
       return;
     }
 
-    router.push('/dashboard/overview');
+    router.push('/dashboard');
     router.refresh();
   };
 
@@ -77,7 +77,7 @@ export default function LoginPage() {
 
     if (data.session) {
       toast({ title: 'Account created', description: 'Welcome to the dashboard.' });
-      router.push('/dashboard/overview');
+      router.push('/dashboard');
       router.refresh();
       return;
     }

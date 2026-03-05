@@ -2,15 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BarChart3, Map, Activity, Database, FileText } from 'lucide-react';
+import { BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { href: '/dashboard/overview', label: 'Overview', icon: BarChart3 },
-  { href: '/dashboard/map', label: 'Interactive Map', icon: Map },
-  { href: '/dashboard/time-series', label: 'Time Series', icon: Activity },
-  { href: '/dashboard/data-explorer', label: 'Data Explorer', icon: Database },
-  { href: '/dashboard/reports', label: 'Reports', icon: FileText },
+  { href: '/dashboard', label: 'Dashboard', icon: BarChart3 },
 ];
 
 export function MobileNav() {
