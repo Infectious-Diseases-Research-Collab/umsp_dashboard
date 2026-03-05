@@ -17,6 +17,7 @@ import {
   fetchDistinctQuarters,
   fetchYearRange,
 } from '@/lib/queries/monthly-data';
+import { fetchActiveSiteNames } from '@/lib/queries/active-sites';
 import { fetchTimeSeriesData } from '@/lib/queries/time-series';
 import { fetchMapData } from '@/lib/queries/map-data';
 import { downloadCsv } from '@/lib/utils/csv-export';
@@ -33,6 +34,7 @@ const MapContainerComponent = dynamic(
 type TimeScale = 'Monthly' | 'Quarterly' | 'Annual';
 type ViewType = 'Chart' | 'Map' | 'Table';
 type OptionalMetric = IndicatorLabel | 'None';
+type SiteScope = 'Active Sites' | 'All Sites';
 
 function quarterSortKey(quarter: string): number {
   const qMatch = quarter.match(/Q([1-4])/i);
@@ -51,26 +53,15 @@ function getPeriodLabel(key: string, timeScale: TimeScale): string {
   return formatDate(key);
 }
 
-function monthSequence(start: string, end: string): string[] {
-  if (!start || !end) return [];
-  const result: string[] = [];
-  const cursor = new Date(`${start}T00:00:00`);
-  const last = new Date(`${end}T00:00:00`);
-  if (Number.isNaN(cursor.getTime()) || Number.isNaN(last.getTime())) return [];
-
-  cursor.setDate(1);
-  last.setDate(1);
-  while (cursor <= last) {
-    result.push(cursor.toISOString().split('T')[0]);
-    cursor.setMonth(cursor.getMonth() + 1);
-  }
-  return result;
+function normalizeMonthyearKey(value: unknown): string {
+  const raw = String(value ?? '');
+  return raw.includes('T') ? raw.split('T')[0] : raw;
 }
 
 function periodKey(row: Record<string, unknown>, timeScale: TimeScale): string {
   if (timeScale === 'Annual') return String(row.year);
   if (timeScale === 'Quarterly') return String(row.quarter);
-  return String(row.monthyear);
+  return normalizeMonthyearKey(row.monthyear);
 }
 
 function metricSeriesForSite(
@@ -104,10 +95,12 @@ export default function DashboardPage() {
   const [yearRange, setYearRange] = useState<[number, number]>([2018, 2025]);
   const [primaryMetric, setPrimaryMetric] = useState<IndicatorLabel>('Malaria Incidence per 1000');
   const [secondaryMetric, setSecondaryMetric] = useState<OptionalMetric>('None');
+  const [siteScope, setSiteScope] = useState<SiteScope>('All Sites');
   const [viewType, setViewType] = useState<ViewType>('Chart');
   const [showRawData, setShowRawData] = useState(false);
 
   const { data: allSites } = useSupabaseQuery(() => fetchDistinctSites());
+  const { data: activeSites } = useSupabaseQuery(() => fetchActiveSiteNames());
   const { data: monthyears } = useSupabaseQuery(() => fetchDistinctMonthyears());
   const { data: quarters } = useSupabaseQuery(() => fetchDistinctQuarters());
   const { data: years } = useSupabaseQuery(() => fetchYearRange());
@@ -130,6 +123,16 @@ export default function DashboardPage() {
     if (startIndex < 0 || endIndex < 0) return [];
     return sortedQuarters.slice(Math.min(startIndex, endIndex), Math.max(startIndex, endIndex) + 1);
   }, [sortedQuarters, quarterRange]);
+  const availableSites = useMemo(() => {
+    const all = allSites ?? [];
+    if (siteScope === 'All Sites') return all;
+    const activeSet = new Set(activeSites ?? []);
+    return all.filter((site) => activeSet.has(site));
+  }, [allSites, activeSites, siteScope]);
+  const effectiveSites = useMemo(
+    () => (selectedSites.length ? selectedSites : (siteScope === 'Active Sites' ? availableSites : undefined)),
+    [selectedSites, siteScope, availableSites]
+  );
 
   useEffect(() => {
     if (!monthyears || monthyears.length === 0) return;
@@ -145,14 +148,17 @@ export default function DashboardPage() {
     if (!years) return;
     setYearRange([years.min, years.max]);
   }, [years]);
+  useEffect(() => {
+    setSelectedSites((prev) => prev.filter((site) => availableSites.includes(site)));
+  }, [availableSites]);
 
-  const queryDeps = [selectedSites, timeScale, normalizedMonthRange, quarterSelection, normalizedYearRange] as const;
+  const queryDeps = [effectiveSites, timeScale, normalizedMonthRange, quarterSelection, normalizedYearRange] as const;
 
   const { data: tableRows, loading: tableLoading } = useSupabaseQuery(
     () =>
       fetchTimeSeriesData({
         geoLevel: 'Site',
-        entities: selectedSites.length ? selectedSites : undefined,
+        entities: effectiveSites,
         timeScale,
         dateRange: timeScale === 'Monthly' ? normalizedMonthRange : undefined,
         quarters: timeScale === 'Quarterly' ? quarterSelection : undefined,
@@ -164,7 +170,7 @@ export default function DashboardPage() {
   const { data: mapRows, loading: mapLoading } = useSupabaseQuery(
     () =>
       fetchMapData({
-        sites: selectedSites.length ? selectedSites : undefined,
+        sites: effectiveSites,
         timeScale,
         dateRange: timeScale === 'Monthly' ? normalizedMonthRange : undefined,
         quarters: timeScale === 'Quarterly' ? quarterSelection : undefined,
@@ -174,11 +180,17 @@ export default function DashboardPage() {
   );
 
   const periodKeys = useMemo(() => {
-    if (timeScale === 'Monthly') return monthSequence(normalizedMonthRange[0], normalizedMonthRange[1]);
+    if (timeScale === 'Monthly') {
+      const keys = (monthyears ?? []).map((m) => normalizeMonthyearKey(m));
+      const startIndex = keys.indexOf(normalizeMonthyearKey(normalizedMonthRange[0]));
+      const endIndex = keys.indexOf(normalizeMonthyearKey(normalizedMonthRange[1]));
+      if (startIndex < 0 || endIndex < 0) return keys;
+      return keys.slice(Math.min(startIndex, endIndex), Math.max(startIndex, endIndex) + 1);
+    }
     if (timeScale === 'Quarterly') return quarterSelection;
     const [start, end] = normalizedYearRange;
     return Array.from({ length: Math.max(0, end - start + 1) }, (_, i) => String(start + i));
-  }, [timeScale, normalizedMonthRange, quarterSelection, normalizedYearRange]);
+  }, [timeScale, monthyears, normalizedMonthRange, quarterSelection, normalizedYearRange]);
   const periodLabels = useMemo(() => periodKeys.map((key) => getPeriodLabel(key, timeScale)), [periodKeys, timeScale]);
 
   const selectedColumns = useMemo(() => {
@@ -341,8 +353,28 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             <div>
               <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Site(s)</Label>
+              <div className="mb-2 flex gap-4 text-sm">
+                <label className="inline-flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="site-scope"
+                    checked={siteScope === 'Active Sites'}
+                    onChange={() => setSiteScope('Active Sites')}
+                  />
+                  <span>Active Sites</span>
+                </label>
+                <label className="inline-flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="site-scope"
+                    checked={siteScope === 'All Sites'}
+                    onChange={() => setSiteScope('All Sites')}
+                  />
+                  <span>All Sites</span>
+                </label>
+              </div>
               <MultiSelect
-                options={allSites ?? []}
+                options={availableSites}
                 selected={selectedSites}
                 onChange={setSelectedSites}
                 placeholder="All Sites"
