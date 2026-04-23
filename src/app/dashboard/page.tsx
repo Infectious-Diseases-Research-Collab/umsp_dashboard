@@ -508,7 +508,7 @@ export default function DashboardPage() {
                           })(),
                         },
                       },
-                      ...(hasSecondMetric && secondaryMetric !== 'None'
+                      ...(hasSecondMetric
                         ? {
                             yaxis2: {
                               title: {
