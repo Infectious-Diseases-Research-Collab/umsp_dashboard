@@ -6,9 +6,9 @@ import { Button } from '@/components/ui/button';
 const stats = [
   { value: '42', label: 'Active Malaria Reference Centers' },
   { value: '80', label: 'Total MRCs in database' },
-  { value: '120,000+', label: 'Patient visits added per month' },
-  { value: '7,000,000+', label: 'Unique patient visits in database' },
-  { value: 'Since 2006', label: 'Year UMSP was established' },
+  { value: '60,000+', label: 'Patient visits added per month' },
+  { value: '6.3M+', label: 'Patient visits in database' },
+  { value: 'April 2017', label: 'Database coverage start' },
 ];
 
 export default function LandingPage() {

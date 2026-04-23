@@ -24,7 +24,7 @@ import { fetchMapData } from '@/lib/queries/map-data';
 import { downloadCsv } from '@/lib/utils/csv-export';
 import { formatDate } from '@/lib/utils/format';
 import { matchActiveSite } from '@/lib/utils/indicators';
-import { INDICATOR_DB_COLUMNS, INDICATOR_DISPLAY_NAMES, LEVEL_INDICATOR_GROUPS, IndicatorLabel } from '@/types/indicators';
+import { INDICATOR_DB_COLUMNS, INDICATOR_DISPLAY_NAMES, INDICATOR_UNITS, LEVEL_INDICATOR_GROUPS, IndicatorLabel } from '@/types/indicators';
 import { getColorsForGroups } from '@/lib/utils/color-palette';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
@@ -219,12 +219,13 @@ export default function DashboardPage() {
     return selected.flatMap((site) => {
       const siteRows = rows.filter((row) => String(row.site) === site);
       const primaryValues = metricSeriesForSite(siteRows, periodKeys, primaryMetric, timeScale);
+      const primaryDisplay = INDICATOR_DISPLAY_NAMES[primaryMetric] ?? primaryMetric;
       const primaryTrace = {
         type: 'scatter',
         mode: 'lines+markers',
         x: periodLabels,
         y: primaryValues,
-        name: site,
+        name: secondMetric ? `${site} (${primaryDisplay})` : site,
         line: { width: 2, color: colors[site] },
         marker: { size: 5 },
         yaxis: 'y',
@@ -232,6 +233,7 @@ export default function DashboardPage() {
 
       if (!secondMetric) return [primaryTrace];
 
+      const secondDisplay = INDICATOR_DISPLAY_NAMES[secondMetric] ?? secondMetric;
       const secondaryValues = metricSeriesForSite(siteRows, periodKeys, secondMetric, timeScale);
       return [
         primaryTrace,
@@ -240,7 +242,7 @@ export default function DashboardPage() {
           mode: 'lines+markers',
           x: periodLabels,
           y: secondaryValues,
-          name: `${site} (${secondMetric})`,
+          name: `${site} (${secondDisplay})`,
           line: { width: 1.5, color: colors[site], dash: 'dot' as const },
           marker: { size: 4 },
           yaxis: 'y2',
@@ -495,13 +497,27 @@ export default function DashboardPage() {
                     data={chartTraces}
                     layout={{
                       height: 520,
-                      margin: { l: 55, r: hasSecondMetric ? 80 : 20, t: 30, b: 80 },
-                      xaxis: { title: timeScale === 'Annual' ? 'Year' : timeScale, tickangle: -35 },
-                      yaxis: { title: primaryMetric },
-                      ...(hasSecondMetric
+                      margin: { l: 90, r: hasSecondMetric ? 110 : 20, t: 30, b: 80 },
+                      xaxis: { title: { text: timeScale === 'Annual' ? 'Year' : timeScale }, tickangle: -35 },
+                      yaxis: {
+                        title: {
+                          text: (() => {
+                            const d = INDICATOR_DISPLAY_NAMES[primaryMetric] ?? primaryMetric;
+                            const u = INDICATOR_UNITS[primaryMetric];
+                            return u ? `${d} (${u})` : d;
+                          })(),
+                        },
+                      },
+                      ...(hasSecondMetric && secondaryMetric !== 'None'
                         ? {
                             yaxis2: {
-                              title: secondaryMetric,
+                              title: {
+                                text: (() => {
+                                  const d = INDICATOR_DISPLAY_NAMES[secondaryMetric as IndicatorLabel] ?? secondaryMetric;
+                                  const u = INDICATOR_UNITS[secondaryMetric as IndicatorLabel];
+                                  return u ? `${d} (${u})` : d;
+                                })(),
+                              },
                               overlaying: 'y',
                               side: 'right',
                             },

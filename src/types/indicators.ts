@@ -21,11 +21,11 @@ export const LEVEL_INDICATOR_GROUPS = {
     'Suspected Malaria Cases',
     'Proportion Suspected Malaria',
     'Proportion Tested',
+    'Proportion Visits from Target Area',
   ] as IndicatorLabel[],
   'Target Area Level': [
     'Malaria Incidence per 1000',
     'TPR (CA)',
-    'Proportion Visits from Target Area',
   ] as IndicatorLabel[],
 };
 
@@ -49,6 +49,15 @@ export const INDICATOR_GROUPS = {
 
 export const INDICATOR_DISPLAY_NAMES: Partial<Record<IndicatorLabel, string>> = {
   'TPR (CA)': 'TPR',
+};
+
+export const INDICATOR_UNITS: Partial<Record<IndicatorLabel, string>> = {
+  'Malaria Incidence per 1000': 'cases per 1,000 PY',
+  'TPR': '%',
+  'TPR (CA)': '%',
+  'Proportion Suspected Malaria': '%',
+  'Proportion Tested': '%',
+  'Proportion Visits from Target Area': '%',
 };
 
 export type TimeScale = 'Monthly' | 'Quarterly' | 'Annual';

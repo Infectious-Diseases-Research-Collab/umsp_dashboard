@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useSupabaseQuery } from '@/lib/hooks/use-supabase-query';
 import { fetchUmspSites, isActiveSite } from '@/lib/queries/umsp-sites';
 import { formatDate } from '@/lib/utils/format';
@@ -11,7 +12,20 @@ export default function SiteSummaryPage() {
   const inactiveCount = (sites ?? []).filter((s) => !isActiveSite(s)).length;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      {/* Site location map */}
+      <div className="flex flex-col items-center gap-2">
+        <p className="text-sm font-medium text-muted-foreground">Map of Malaria Reference Centers</p>
+        <Image
+          src="/logo/site-map.png"
+          alt="Map of Malaria Reference Centers"
+          width={0}
+          height={0}
+          sizes="60vw"
+          className="h-auto w-[60%] rounded-xl border border-border/70 shadow-sm"
+        />
+      </div>
+
       {!loading && sites && (
         <div className="flex gap-6 text-sm text-muted-foreground">
           <span><strong className="text-foreground">{activeCount}</strong> active</span>

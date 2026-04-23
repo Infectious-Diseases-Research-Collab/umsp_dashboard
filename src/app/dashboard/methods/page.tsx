@@ -2,29 +2,46 @@ import Image from 'next/image';
 
 const indicators = [
   {
-    label: 'Total confirmed malaria cases (TCM)',
-    facility: true,
-    target: true,
-  },
-  {
     label: 'Test positivity rate (TPR)',
-    facility: true,
-    target: true,
-  },
-  {
-    label: 'Total patients tested',
+    definition: 'Proportion of tested outpatients with a positive malaria result; calculated as confirmed cases ÷ total tested.',
     facility: true,
     target: true,
   },
   {
     label: 'Malaria incidence (cases per 1,000 PY)',
+    definition: 'Confirmed malaria cases among target area residents per 1,000 person-years at risk. Requires population denominator from target area census.',
     facility: false,
     target: true,
   },
   {
-    label: 'Parasite prevalence (from cross-sectional surveys)',
-    facility: false,
-    target: true,
+    label: 'Number of visits',
+    definition: 'Total outpatient visits recorded at the MRC in the period.',
+    facility: true,
+    target: false,
+  },
+  {
+    label: 'Suspected malaria cases',
+    definition: 'Outpatients for whom malaria was clinically suspected by the attending health worker, regardless of test result.',
+    facility: true,
+    target: false,
+  },
+  {
+    label: 'Proportion suspected malaria',
+    definition: 'Share of all outpatient visits in which malaria was clinically suspected; calculated as suspected cases ÷ total visits.',
+    facility: true,
+    target: false,
+  },
+  {
+    label: 'Proportion tested',
+    definition: 'Share of clinically suspected malaria cases who received a diagnostic test; calculated as total tested ÷ suspected cases.',
+    facility: true,
+    target: false,
+  },
+  {
+    label: 'Proportion visits from target area',
+    definition: 'Share of all facility visits made by residents of the defined target area; used to assess target area representativeness.',
+    facility: true,
+    target: false,
   },
 ];
 
@@ -93,8 +110,11 @@ export default function MethodsPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border/60">
-                <th className="w-1/3 px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <th className="w-[22%] px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Indicator
+                </th>
+                <th className="w-[40%] px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Definition
                 </th>
                 <th className="px-5 py-4 text-center">
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
@@ -111,26 +131,13 @@ export default function MethodsPage() {
               </tr>
             </thead>
             <tbody>
-              {/* Data source row */}
-              <tr className="border-b border-border/40 bg-muted/20">
-                <td className="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Data source
-                </td>
-                <td className="px-5 py-3 text-center text-xs text-muted-foreground">
-                  All outpatients presenting to the MRC
-                </td>
-                <td className="px-5 py-3 text-center text-xs text-muted-foreground">
-                  Patients residing within the defined target area + census population denominator
-                </td>
-              </tr>
-
-              {/* Indicator rows */}
               {indicators.map((row, i) => (
                 <tr
                   key={row.label}
                   className={`border-b border-border/40 last:border-0 ${i % 2 === 0 ? '' : 'bg-muted/10'}`}
                 >
                   <td className="px-5 py-3.5 font-medium text-foreground">{row.label}</td>
+                  <td className="px-5 py-3.5 text-muted-foreground">{row.definition}</td>
                   <td className="px-5 py-3.5 text-center">
                     {row.facility ? (
                       <span className="text-lg font-bold text-emerald-500">✓</span>
