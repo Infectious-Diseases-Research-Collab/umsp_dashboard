@@ -35,13 +35,16 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbG...
 
 Supabase clients: `src/lib/supabase/client.ts` (browser) and `src/lib/supabase/server.ts` (server components/API routes).
 
-### Database Schema (3 tables)
+### Database Schema
 
-- **`umsp_monthly_data`** — monthly surveillance records per site (`site`, `region`, `district`, `monthyear`, `year`, `quarter`, + 8 indicator columns). Upsert conflict key: `site,monthyear`.
+**Authority:** `supabase/umsp-dashboard.json` is the single source of truth for the database schema. It contains the complete column list, RLS policies, RLS status, and table privileges for every table and view in the `public` schema, exported directly from Supabase. Always consult this file when reasoning about table structure, types, or access rules. Other `.sql` files in `supabase/` are historical/unused and should be ignored.
+
+Primary tables used by the dashboard:
+- **`umsp_monthly_data`** — monthly surveillance records per site. Upsert conflict key: `site,monthyear`.
 - **`health_facility_coordinates`** — lat/lon per site (42 rows). Conflict key: `site`.
 - **`active_sites`** — list of currently active sites (42 rows). Conflict key: `site`.
 
-SQL artifacts (schema, indexes, RLS policies, functions) are in `supabase/`.
+All tables have RLS enabled: `SELECT` requires `authenticated`; `INSERT`/`UPDATE`/`DELETE` require `is_admin()`. Explicit GRANTs to `anon`, `authenticated`, and `service_role` are already in place (compatible with Supabase's Oct 2026 default-grants change).
 
 ### Indicators
 

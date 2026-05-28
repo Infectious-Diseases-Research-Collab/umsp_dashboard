@@ -1,0 +1,3241 @@
+[
+  {
+    "project_schema": {
+      "tables": [
+        {
+          "table_name": "active_site_umsp_site_map",
+          "columns": [
+            {
+              "column": "id",
+              "type": "bigint",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "active_site_id",
+              "type": "bigint",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "umsp_site",
+              "type": "text",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "match_method",
+              "type": "text",
+              "nullable": false,
+              "default": "'normalized_name'::text"
+            },
+            {
+              "column": "created_at",
+              "type": "timestamp with time zone",
+              "nullable": true,
+              "default": "now()"
+            }
+          ]
+        },
+        {
+          "table_name": "active_sites",
+          "columns": [
+            {
+              "column": "id",
+              "type": "bigint",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "site",
+              "type": "text",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "created_at",
+              "type": "timestamp with time zone",
+              "nullable": true,
+              "default": "now()"
+            }
+          ]
+        },
+        {
+          "table_name": "genomic_multi_locus",
+          "columns": [
+            {
+              "column": "id",
+              "type": "bigint",
+              "nullable": false,
+              "default": "nextval('genomic_multi_locus_id_seq'::regclass)"
+            },
+            {
+              "column": "platform",
+              "type": "text",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "population",
+              "type": "text",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "site_key",
+              "type": "text",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "year",
+              "type": "integer",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "group_id",
+              "type": "text",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "variant",
+              "type": "text",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "allele_count",
+              "type": "integer",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "sample_count",
+              "type": "integer",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "allele_total",
+              "type": "integer",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "sample_total",
+              "type": "integer",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "freq",
+              "type": "double precision",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "prev",
+              "type": "double precision",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "created_at",
+              "type": "timestamp with time zone",
+              "nullable": true,
+              "default": "now()"
+            }
+          ]
+        },
+        {
+          "table_name": "genomic_multi_locus_v",
+          "columns": [
+            {
+              "column": "id",
+              "type": "bigint",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "platform",
+              "type": "text",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "population",
+              "type": "text",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "site_key",
+              "type": "text",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "year",
+              "type": "integer",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "group_id",
+              "type": "text",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "variant",
+              "type": "text",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "allele_count",
+              "type": "integer",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "sample_count",
+              "type": "integer",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "allele_total",
+              "type": "integer",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "sample_total",
+              "type": "integer",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "freq",
+              "type": "double precision",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "prev",
+              "type": "double precision",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "site",
+              "type": "text",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "region",
+              "type": "text",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "district",
+              "type": "text",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "latitude",
+              "type": "double precision",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "longitude",
+              "type": "double precision",
+              "nullable": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "table_name": "genomic_single_locus",
+          "columns": [
+            {
+              "column": "id",
+              "type": "bigint",
+              "nullable": false,
+              "default": "nextval('genomic_single_locus_id_seq'::regclass)"
+            },
+            {
+              "column": "platform",
+              "type": "text",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "population",
+              "type": "text",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "site_key",
+              "type": "text",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "year",
+              "type": "integer",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "variant",
+              "type": "text",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "gene_id",
+              "type": "text",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "codon",
+              "type": "integer",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "allele",
+              "type": "text",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "prev",
+              "type": "double precision",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "sample_count",
+              "type": "integer",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "sample_total",
+              "type": "integer",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "allele_total",
+              "type": "integer",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "allele_count",
+              "type": "integer",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "freq",
+              "type": "double precision",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "created_at",
+              "type": "timestamp with time zone",
+              "nullable": true,
+              "default": "now()"
+            }
+          ]
+        },
+        {
+          "table_name": "genomic_single_locus_v",
+          "columns": [
+            {
+              "column": "id",
+              "type": "bigint",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "platform",
+              "type": "text",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "population",
+              "type": "text",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "site_key",
+              "type": "text",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "year",
+              "type": "integer",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "variant",
+              "type": "text",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "gene_id",
+              "type": "text",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "codon",
+              "type": "integer",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "allele",
+              "type": "text",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "prev",
+              "type": "double precision",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "sample_count",
+              "type": "integer",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "sample_total",
+              "type": "integer",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "allele_total",
+              "type": "integer",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "allele_count",
+              "type": "integer",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "freq",
+              "type": "double precision",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "site",
+              "type": "text",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "region",
+              "type": "text",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "district",
+              "type": "text",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "latitude",
+              "type": "double precision",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "longitude",
+              "type": "double precision",
+              "nullable": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "table_name": "genomic_sites_reference",
+          "columns": [
+            {
+              "column": "id",
+              "type": "bigint",
+              "nullable": false,
+              "default": "nextval('genomic_sites_reference_id_seq'::regclass)"
+            },
+            {
+              "column": "site_id",
+              "type": "integer",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "site_name",
+              "type": "text",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "full_label",
+              "type": "text",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "region",
+              "type": "text",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "district",
+              "type": "text",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "latitude",
+              "type": "double precision",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "longitude",
+              "type": "double precision",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "collection_code",
+              "type": "text",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "created_at",
+              "type": "timestamp with time zone",
+              "nullable": true,
+              "default": "now()"
+            }
+          ]
+        },
+        {
+          "table_name": "health_facility_coordinates",
+          "columns": [
+            {
+              "column": "id",
+              "type": "bigint",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "new_site_id",
+              "type": "integer",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "site",
+              "type": "text",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "district",
+              "type": "text",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "latitude",
+              "type": "double precision",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "longitude",
+              "type": "double precision",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "created_at",
+              "type": "timestamp with time zone",
+              "nullable": true,
+              "default": "now()"
+            }
+          ]
+        },
+        {
+          "table_name": "umsp_monthly_data",
+          "columns": [
+            {
+              "column": "id",
+              "type": "bigint",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "site",
+              "type": "text",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "region",
+              "type": "text",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "district",
+              "type": "text",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "monthyear",
+              "type": "date",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "quarter",
+              "type": "text",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "year",
+              "type": "smallint",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "malaria_incidence_per_1000_py",
+              "type": "double precision",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "tpr_cases_all",
+              "type": "double precision",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "tpr_cases_per_ca",
+              "type": "double precision",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "visits",
+              "type": "integer",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "malariasuspected",
+              "type": "integer",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "propsuspected_per_total_visits",
+              "type": "double precision",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "proptested",
+              "type": "double precision",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "prop_visit_ca",
+              "type": "double precision",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "created_at",
+              "type": "timestamp with time zone",
+              "nullable": true,
+              "default": "now()"
+            }
+          ]
+        },
+        {
+          "table_name": "umsp_sites",
+          "columns": [
+            {
+              "column": "site_id",
+              "type": "integer",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "site",
+              "type": "text",
+              "nullable": false,
+              "default": null
+            },
+            {
+              "column": "district",
+              "type": "text",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "region",
+              "type": "text",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "status",
+              "type": "text",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "date_from",
+              "type": "date",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "date_to",
+              "type": "date",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "latitude",
+              "type": "double precision",
+              "nullable": true,
+              "default": null
+            },
+            {
+              "column": "longitude",
+              "type": "double precision",
+              "nullable": true,
+              "default": null
+            }
+          ]
+        }
+      ],
+      "rls": [
+        {
+          "table": "active_site_umsp_site_map",
+          "policy": "Admin delete active_site_umsp_site_map",
+          "command": "DELETE",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": "is_admin()",
+          "with_check": null
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "policy": "Admin insert active_site_umsp_site_map",
+          "command": "INSERT",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": null,
+          "with_check": "is_admin()"
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "policy": "Admin update active_site_umsp_site_map",
+          "command": "UPDATE",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": "is_admin()",
+          "with_check": null
+        },
+        {
+          "table": "active_sites",
+          "policy": "Admin delete active_sites",
+          "command": "DELETE",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": "is_admin()",
+          "with_check": null
+        },
+        {
+          "table": "active_sites",
+          "policy": "Admin insert active_sites",
+          "command": "INSERT",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": null,
+          "with_check": "is_admin()"
+        },
+        {
+          "table": "active_sites",
+          "policy": "Admin update active_sites",
+          "command": "UPDATE",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": "is_admin()",
+          "with_check": null
+        },
+        {
+          "table": "active_sites",
+          "policy": "Authenticated read active_sites",
+          "command": "SELECT",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": "true",
+          "with_check": null
+        },
+        {
+          "table": "genomic_multi_locus",
+          "policy": "Admin delete genomic_multi_locus",
+          "command": "DELETE",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": "is_admin()",
+          "with_check": null
+        },
+        {
+          "table": "genomic_multi_locus",
+          "policy": "Admin insert genomic_multi_locus",
+          "command": "INSERT",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": null,
+          "with_check": "is_admin()"
+        },
+        {
+          "table": "genomic_multi_locus",
+          "policy": "Admin update genomic_multi_locus",
+          "command": "UPDATE",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": "is_admin()",
+          "with_check": null
+        },
+        {
+          "table": "genomic_multi_locus",
+          "policy": "Authenticated read genomic_multi_locus",
+          "command": "SELECT",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": "true",
+          "with_check": null
+        },
+        {
+          "table": "genomic_single_locus",
+          "policy": "Admin delete genomic_single_locus",
+          "command": "DELETE",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": "is_admin()",
+          "with_check": null
+        },
+        {
+          "table": "genomic_single_locus",
+          "policy": "Admin insert genomic_single_locus",
+          "command": "INSERT",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": null,
+          "with_check": "is_admin()"
+        },
+        {
+          "table": "genomic_single_locus",
+          "policy": "Admin update genomic_single_locus",
+          "command": "UPDATE",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": "is_admin()",
+          "with_check": null
+        },
+        {
+          "table": "genomic_single_locus",
+          "policy": "Authenticated read genomic_single_locus",
+          "command": "SELECT",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": "true",
+          "with_check": null
+        },
+        {
+          "table": "genomic_sites_reference",
+          "policy": "Admin delete genomic_sites_reference",
+          "command": "DELETE",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": "is_admin()",
+          "with_check": null
+        },
+        {
+          "table": "genomic_sites_reference",
+          "policy": "Admin insert genomic_sites_reference",
+          "command": "INSERT",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": null,
+          "with_check": "is_admin()"
+        },
+        {
+          "table": "genomic_sites_reference",
+          "policy": "Admin update genomic_sites_reference",
+          "command": "UPDATE",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": "is_admin()",
+          "with_check": null
+        },
+        {
+          "table": "genomic_sites_reference",
+          "policy": "Authenticated read genomic_sites_reference",
+          "command": "SELECT",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": "true",
+          "with_check": null
+        },
+        {
+          "table": "health_facility_coordinates",
+          "policy": "Admin delete health_facility_coordinates",
+          "command": "DELETE",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": "is_admin()",
+          "with_check": null
+        },
+        {
+          "table": "health_facility_coordinates",
+          "policy": "Admin insert health_facility_coordinates",
+          "command": "INSERT",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": null,
+          "with_check": "is_admin()"
+        },
+        {
+          "table": "health_facility_coordinates",
+          "policy": "Admin update health_facility_coordinates",
+          "command": "UPDATE",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": "is_admin()",
+          "with_check": null
+        },
+        {
+          "table": "health_facility_coordinates",
+          "policy": "Authenticated read health_facility_coordinates",
+          "command": "SELECT",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": "true",
+          "with_check": null
+        },
+        {
+          "table": "umsp_monthly_data",
+          "policy": "Admin delete umsp_monthly_data",
+          "command": "DELETE",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": "is_admin()",
+          "with_check": null
+        },
+        {
+          "table": "umsp_monthly_data",
+          "policy": "Admin insert umsp_monthly_data",
+          "command": "INSERT",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": null,
+          "with_check": "is_admin()"
+        },
+        {
+          "table": "umsp_monthly_data",
+          "policy": "Admin update umsp_monthly_data",
+          "command": "UPDATE",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": "is_admin()",
+          "with_check": null
+        },
+        {
+          "table": "umsp_monthly_data",
+          "policy": "Authenticated read umsp_monthly_data",
+          "command": "SELECT",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": "true",
+          "with_check": null
+        },
+        {
+          "table": "umsp_sites",
+          "policy": "Admin delete umsp_sites",
+          "command": "DELETE",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": "is_admin()",
+          "with_check": null
+        },
+        {
+          "table": "umsp_sites",
+          "policy": "Admin insert umsp_sites",
+          "command": "INSERT",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": null,
+          "with_check": "is_admin()"
+        },
+        {
+          "table": "umsp_sites",
+          "policy": "Admin update umsp_sites",
+          "command": "UPDATE",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": "is_admin()",
+          "with_check": null
+        },
+        {
+          "table": "umsp_sites",
+          "policy": "Authenticated read umsp_sites",
+          "command": "SELECT",
+          "roles": [
+            "authenticated"
+          ],
+          "using_expr": "true",
+          "with_check": null
+        }
+      ],
+      "rls_status": [
+        {
+          "table": "active_site_umsp_site_map",
+          "rls_enabled": true,
+          "rls_forced": false
+        },
+        {
+          "table": "active_sites",
+          "rls_enabled": true,
+          "rls_forced": false
+        },
+        {
+          "table": "genomic_multi_locus",
+          "rls_enabled": true,
+          "rls_forced": false
+        },
+        {
+          "table": "genomic_single_locus",
+          "rls_enabled": true,
+          "rls_forced": false
+        },
+        {
+          "table": "genomic_sites_reference",
+          "rls_enabled": true,
+          "rls_forced": false
+        },
+        {
+          "table": "health_facility_coordinates",
+          "rls_enabled": true,
+          "rls_forced": false
+        },
+        {
+          "table": "umsp_monthly_data",
+          "rls_enabled": true,
+          "rls_forced": false
+        },
+        {
+          "table": "umsp_sites",
+          "rls_enabled": true,
+          "rls_forced": false
+        }
+      ],
+      "table_privileges": [
+        {
+          "table": "active_site_umsp_site_map",
+          "grantee": "anon",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "grantee": "anon",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "grantee": "anon",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "grantee": "anon",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "grantee": "anon",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "grantee": "anon",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "grantee": "anon",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "grantee": "authenticated",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "grantee": "authenticated",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "grantee": "authenticated",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "grantee": "authenticated",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "grantee": "authenticated",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "grantee": "authenticated",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "grantee": "authenticated",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "grantee": "service_role",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "grantee": "service_role",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "grantee": "service_role",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "grantee": "service_role",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "grantee": "service_role",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "grantee": "service_role",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "grantee": "service_role",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "active_sites",
+          "grantee": "anon",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "active_sites",
+          "grantee": "anon",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "active_sites",
+          "grantee": "anon",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "active_sites",
+          "grantee": "anon",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "active_sites",
+          "grantee": "anon",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "active_sites",
+          "grantee": "anon",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "active_sites",
+          "grantee": "anon",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "active_sites",
+          "grantee": "authenticated",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "active_sites",
+          "grantee": "authenticated",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "active_sites",
+          "grantee": "authenticated",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "active_sites",
+          "grantee": "authenticated",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "active_sites",
+          "grantee": "authenticated",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "active_sites",
+          "grantee": "authenticated",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "active_sites",
+          "grantee": "authenticated",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "active_sites",
+          "grantee": "service_role",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "active_sites",
+          "grantee": "service_role",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "active_sites",
+          "grantee": "service_role",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "active_sites",
+          "grantee": "service_role",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "active_sites",
+          "grantee": "service_role",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "active_sites",
+          "grantee": "service_role",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "active_sites",
+          "grantee": "service_role",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus",
+          "grantee": "anon",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus",
+          "grantee": "anon",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus",
+          "grantee": "anon",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus",
+          "grantee": "anon",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus",
+          "grantee": "anon",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus",
+          "grantee": "anon",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus",
+          "grantee": "anon",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus",
+          "grantee": "authenticated",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus",
+          "grantee": "authenticated",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus",
+          "grantee": "authenticated",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus",
+          "grantee": "authenticated",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus",
+          "grantee": "authenticated",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus",
+          "grantee": "authenticated",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus",
+          "grantee": "authenticated",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus",
+          "grantee": "service_role",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus",
+          "grantee": "service_role",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus",
+          "grantee": "service_role",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus",
+          "grantee": "service_role",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus",
+          "grantee": "service_role",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus",
+          "grantee": "service_role",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus",
+          "grantee": "service_role",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus_v",
+          "grantee": "anon",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus_v",
+          "grantee": "anon",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus_v",
+          "grantee": "anon",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus_v",
+          "grantee": "anon",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus_v",
+          "grantee": "anon",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus_v",
+          "grantee": "anon",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus_v",
+          "grantee": "anon",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus_v",
+          "grantee": "authenticated",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus_v",
+          "grantee": "authenticated",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus_v",
+          "grantee": "authenticated",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus_v",
+          "grantee": "authenticated",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus_v",
+          "grantee": "authenticated",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus_v",
+          "grantee": "authenticated",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus_v",
+          "grantee": "authenticated",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus_v",
+          "grantee": "service_role",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus_v",
+          "grantee": "service_role",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus_v",
+          "grantee": "service_role",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus_v",
+          "grantee": "service_role",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus_v",
+          "grantee": "service_role",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus_v",
+          "grantee": "service_role",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_multi_locus_v",
+          "grantee": "service_role",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus",
+          "grantee": "anon",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus",
+          "grantee": "anon",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus",
+          "grantee": "anon",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus",
+          "grantee": "anon",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus",
+          "grantee": "anon",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus",
+          "grantee": "anon",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus",
+          "grantee": "anon",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus",
+          "grantee": "authenticated",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus",
+          "grantee": "authenticated",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus",
+          "grantee": "authenticated",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus",
+          "grantee": "authenticated",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus",
+          "grantee": "authenticated",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus",
+          "grantee": "authenticated",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus",
+          "grantee": "authenticated",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus",
+          "grantee": "service_role",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus",
+          "grantee": "service_role",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus",
+          "grantee": "service_role",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus",
+          "grantee": "service_role",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus",
+          "grantee": "service_role",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus",
+          "grantee": "service_role",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus",
+          "grantee": "service_role",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus_v",
+          "grantee": "anon",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus_v",
+          "grantee": "anon",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus_v",
+          "grantee": "anon",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus_v",
+          "grantee": "anon",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus_v",
+          "grantee": "anon",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus_v",
+          "grantee": "anon",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus_v",
+          "grantee": "anon",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus_v",
+          "grantee": "authenticated",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus_v",
+          "grantee": "authenticated",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus_v",
+          "grantee": "authenticated",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus_v",
+          "grantee": "authenticated",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus_v",
+          "grantee": "authenticated",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus_v",
+          "grantee": "authenticated",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus_v",
+          "grantee": "authenticated",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus_v",
+          "grantee": "service_role",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus_v",
+          "grantee": "service_role",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus_v",
+          "grantee": "service_role",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus_v",
+          "grantee": "service_role",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus_v",
+          "grantee": "service_role",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus_v",
+          "grantee": "service_role",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_single_locus_v",
+          "grantee": "service_role",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_sites_reference",
+          "grantee": "anon",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_sites_reference",
+          "grantee": "anon",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_sites_reference",
+          "grantee": "anon",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_sites_reference",
+          "grantee": "anon",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_sites_reference",
+          "grantee": "anon",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_sites_reference",
+          "grantee": "anon",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_sites_reference",
+          "grantee": "anon",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_sites_reference",
+          "grantee": "authenticated",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_sites_reference",
+          "grantee": "authenticated",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_sites_reference",
+          "grantee": "authenticated",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_sites_reference",
+          "grantee": "authenticated",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_sites_reference",
+          "grantee": "authenticated",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_sites_reference",
+          "grantee": "authenticated",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_sites_reference",
+          "grantee": "authenticated",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_sites_reference",
+          "grantee": "service_role",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_sites_reference",
+          "grantee": "service_role",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_sites_reference",
+          "grantee": "service_role",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_sites_reference",
+          "grantee": "service_role",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_sites_reference",
+          "grantee": "service_role",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_sites_reference",
+          "grantee": "service_role",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "genomic_sites_reference",
+          "grantee": "service_role",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "health_facility_coordinates",
+          "grantee": "anon",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "health_facility_coordinates",
+          "grantee": "anon",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "health_facility_coordinates",
+          "grantee": "anon",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "health_facility_coordinates",
+          "grantee": "anon",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "health_facility_coordinates",
+          "grantee": "anon",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "health_facility_coordinates",
+          "grantee": "anon",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "health_facility_coordinates",
+          "grantee": "anon",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "health_facility_coordinates",
+          "grantee": "authenticated",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "health_facility_coordinates",
+          "grantee": "authenticated",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "health_facility_coordinates",
+          "grantee": "authenticated",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "health_facility_coordinates",
+          "grantee": "authenticated",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "health_facility_coordinates",
+          "grantee": "authenticated",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "health_facility_coordinates",
+          "grantee": "authenticated",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "health_facility_coordinates",
+          "grantee": "authenticated",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "health_facility_coordinates",
+          "grantee": "service_role",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "health_facility_coordinates",
+          "grantee": "service_role",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "health_facility_coordinates",
+          "grantee": "service_role",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "health_facility_coordinates",
+          "grantee": "service_role",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "health_facility_coordinates",
+          "grantee": "service_role",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "health_facility_coordinates",
+          "grantee": "service_role",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "health_facility_coordinates",
+          "grantee": "service_role",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_monthly_data",
+          "grantee": "anon",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_monthly_data",
+          "grantee": "anon",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_monthly_data",
+          "grantee": "anon",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_monthly_data",
+          "grantee": "anon",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_monthly_data",
+          "grantee": "anon",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_monthly_data",
+          "grantee": "anon",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_monthly_data",
+          "grantee": "anon",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_monthly_data",
+          "grantee": "authenticated",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_monthly_data",
+          "grantee": "authenticated",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_monthly_data",
+          "grantee": "authenticated",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_monthly_data",
+          "grantee": "authenticated",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_monthly_data",
+          "grantee": "authenticated",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_monthly_data",
+          "grantee": "authenticated",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_monthly_data",
+          "grantee": "authenticated",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_monthly_data",
+          "grantee": "service_role",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_monthly_data",
+          "grantee": "service_role",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_monthly_data",
+          "grantee": "service_role",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_monthly_data",
+          "grantee": "service_role",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_monthly_data",
+          "grantee": "service_role",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_monthly_data",
+          "grantee": "service_role",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_monthly_data",
+          "grantee": "service_role",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_sites",
+          "grantee": "anon",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_sites",
+          "grantee": "anon",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_sites",
+          "grantee": "anon",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_sites",
+          "grantee": "anon",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_sites",
+          "grantee": "anon",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_sites",
+          "grantee": "anon",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_sites",
+          "grantee": "anon",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_sites",
+          "grantee": "authenticated",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_sites",
+          "grantee": "authenticated",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_sites",
+          "grantee": "authenticated",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_sites",
+          "grantee": "authenticated",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_sites",
+          "grantee": "authenticated",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_sites",
+          "grantee": "authenticated",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_sites",
+          "grantee": "authenticated",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_sites",
+          "grantee": "service_role",
+          "privilege": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_sites",
+          "grantee": "service_role",
+          "privilege": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_sites",
+          "grantee": "service_role",
+          "privilege": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_sites",
+          "grantee": "service_role",
+          "privilege": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_sites",
+          "grantee": "service_role",
+          "privilege": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_sites",
+          "grantee": "service_role",
+          "privilege": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "table": "umsp_sites",
+          "grantee": "service_role",
+          "privilege": "UPDATE",
+          "is_grantable": false
+        }
+      ],
+      "data_api_grants_summary": [
+        {
+          "table": "active_site_umsp_site_map",
+          "exposed_to_anon": true,
+          "exposed_to_authenticated": true,
+          "grants": [
+            {
+              "grantee": "anon",
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "UPDATE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "UPDATE"
+            }
+          ]
+        },
+        {
+          "table": "active_sites",
+          "exposed_to_anon": true,
+          "exposed_to_authenticated": true,
+          "grants": [
+            {
+              "grantee": "anon",
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "UPDATE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "UPDATE"
+            }
+          ]
+        },
+        {
+          "table": "genomic_multi_locus",
+          "exposed_to_anon": true,
+          "exposed_to_authenticated": true,
+          "grants": [
+            {
+              "grantee": "anon",
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "UPDATE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "UPDATE"
+            }
+          ]
+        },
+        {
+          "table": "genomic_multi_locus_v",
+          "exposed_to_anon": true,
+          "exposed_to_authenticated": true,
+          "grants": [
+            {
+              "grantee": "anon",
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "UPDATE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "UPDATE"
+            }
+          ]
+        },
+        {
+          "table": "genomic_single_locus",
+          "exposed_to_anon": true,
+          "exposed_to_authenticated": true,
+          "grants": [
+            {
+              "grantee": "anon",
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "UPDATE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "UPDATE"
+            }
+          ]
+        },
+        {
+          "table": "genomic_single_locus_v",
+          "exposed_to_anon": true,
+          "exposed_to_authenticated": true,
+          "grants": [
+            {
+              "grantee": "anon",
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "UPDATE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "UPDATE"
+            }
+          ]
+        },
+        {
+          "table": "genomic_sites_reference",
+          "exposed_to_anon": true,
+          "exposed_to_authenticated": true,
+          "grants": [
+            {
+              "grantee": "anon",
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "UPDATE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "UPDATE"
+            }
+          ]
+        },
+        {
+          "table": "health_facility_coordinates",
+          "exposed_to_anon": true,
+          "exposed_to_authenticated": true,
+          "grants": [
+            {
+              "grantee": "anon",
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "UPDATE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "UPDATE"
+            }
+          ]
+        },
+        {
+          "table": "umsp_monthly_data",
+          "exposed_to_anon": true,
+          "exposed_to_authenticated": true,
+          "grants": [
+            {
+              "grantee": "anon",
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "UPDATE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "UPDATE"
+            }
+          ]
+        },
+        {
+          "table": "umsp_sites",
+          "exposed_to_anon": true,
+          "exposed_to_authenticated": true,
+          "grants": [
+            {
+              "grantee": "anon",
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "anon",
+              "privilege": "UPDATE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "DELETE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "INSERT"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "REFERENCES"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "SELECT"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "TRIGGER"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "TRUNCATE"
+            },
+            {
+              "grantee": "authenticated",
+              "privilege": "UPDATE"
+            }
+          ]
+        }
+      ],
+      "functions": [
+        {
+          "name": "get_data_completeness",
+          "args": "",
+          "returns": "record",
+          "security_definer": false,
+          "definition": "CREATE OR REPLACE FUNCTION public.get_data_completeness()\n RETURNS TABLE(monthyear date, completeness double precision)\n LANGUAGE plpgsql\n STABLE\n SET search_path TO ''\nAS $function$\nBEGIN\n  RETURN QUERY\n  SELECT m.monthyear,\n    ROUND(100.0 * COUNT(m.malaria_incidence_per_1000_py)\n      FILTER (WHERE m.malaria_incidence_per_1000_py IS NOT NULL)::NUMERIC\n      / NULLIF(COUNT(*)::NUMERIC, 0), 1)::DOUBLE PRECISION\n  FROM public.umsp_monthly_data m GROUP BY m.monthyear ORDER BY m.monthyear;\nEND;\n$function$\n"
+        },
+        {
+          "name": "get_regional_summary",
+          "args": "p_year smallint DEFAULT NULL::smallint",
+          "returns": "record",
+          "security_definer": false,
+          "definition": "CREATE OR REPLACE FUNCTION public.get_regional_summary(p_year smallint DEFAULT NULL::smallint)\n RETURNS TABLE(region text, site_count bigint, avg_incidence double precision, avg_tpr double precision, total_visits bigint)\n LANGUAGE plpgsql\n STABLE\n SET search_path TO ''\nAS $function$\nBEGIN\n  RETURN QUERY\n  SELECT m.region, COUNT(DISTINCT m.site),\n    ROUND(AVG(m.malaria_incidence_per_1000_py)::NUMERIC, 1)::DOUBLE PRECISION,\n    ROUND(AVG(m.tpr_cases_all)::NUMERIC, 3)::DOUBLE PRECISION,\n    SUM(m.visits)::BIGINT\n  FROM public.umsp_monthly_data m\n  WHERE (p_year IS NULL OR m.year = p_year)\n  GROUP BY m.region ORDER BY m.region;\nEND;\n$function$\n"
+        },
+        {
+          "name": "is_admin",
+          "args": "",
+          "returns": "bool",
+          "security_definer": true,
+          "definition": "CREATE OR REPLACE FUNCTION public.is_admin()\n RETURNS boolean\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO ''\nAS $function$\nBEGIN\n  RETURN COALESCE(\n    (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin',\n    false\n  );\nEND;\n$function$\n"
+        },
+        {
+          "name": "normalize_site_name",
+          "args": "p_site text",
+          "returns": "text",
+          "security_definer": false,
+          "definition": "CREATE OR REPLACE FUNCTION public.normalize_site_name(p_site text)\n RETURNS text\n LANGUAGE sql\n IMMUTABLE\n SET search_path TO ''\nAS $function$\n  SELECT trim(\n    regexp_replace(\n      regexp_replace(upper(COALESCE(p_site, '')), '\\mHC\\s*(II|III|IV|V)\\M', '', 'g'),\n      '[^A-Z0-9]+', ' ', 'g'\n    )\n  );\n$function$\n"
+        },
+        {
+          "name": "refresh_active_site_umsp_site_map",
+          "args": "",
+          "returns": "int4",
+          "security_definer": true,
+          "definition": "CREATE OR REPLACE FUNCTION public.refresh_active_site_umsp_site_map()\n RETURNS integer\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO ''\nAS $function$\nDECLARE\n  inserted_count INTEGER := 0;\nBEGIN\n  DELETE FROM public.active_site_umsp_site_map;\n\n  WITH ranked_matches AS (\n    SELECT\n      a.id AS active_site_id,\n      m.site AS umsp_site,\n      ROW_NUMBER() OVER (\n        PARTITION BY a.id\n        ORDER BY length(m.site), m.site\n      ) AS rn\n    FROM public.active_sites a\n    JOIN (\n      SELECT DISTINCT site\n      FROM public.umsp_monthly_data\n    ) m\n      ON public.normalize_site_name(a.site) = public.normalize_site_name(m.site)\n  )\n  INSERT INTO public.active_site_umsp_site_map (active_site_id, umsp_site, match_method)\n  SELECT active_site_id, umsp_site, 'normalized_name'\n  FROM ranked_matches\n  WHERE rn = 1;\n\n  GET DIAGNOSTICS inserted_count = ROW_COUNT;\n  RETURN inserted_count;\nEND;\n$function$\n"
+        },
+        {
+          "name": "rls_auto_enable",
+          "args": "",
+          "returns": "event_trigger",
+          "security_definer": true,
+          "definition": "CREATE OR REPLACE FUNCTION public.rls_auto_enable()\n RETURNS event_trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog'\nAS $function$\nDECLARE\n  cmd record;\nBEGIN\n  FOR cmd IN\n    SELECT *\n    FROM pg_event_trigger_ddl_commands()\n    WHERE command_tag IN ('CREATE TABLE', 'CREATE TABLE AS', 'SELECT INTO')\n      AND object_type IN ('table','partitioned table')\n  LOOP\n     IF cmd.schema_name IS NOT NULL AND cmd.schema_name IN ('public') AND cmd.schema_name NOT IN ('pg_catalog','information_schema') AND cmd.schema_name NOT LIKE 'pg_toast%' AND cmd.schema_name NOT LIKE 'pg_temp%' THEN\n      BEGIN\n        EXECUTE format('alter table if exists %s enable row level security', cmd.object_identity);\n        RAISE LOG 'rls_auto_enable: enabled RLS on %', cmd.object_identity;\n      EXCEPTION\n        WHEN OTHERS THEN\n          RAISE LOG 'rls_auto_enable: failed to enable RLS on %', cmd.object_identity;\n      END;\n     ELSE\n        RAISE LOG 'rls_auto_enable: skip % (either system schema or not in enforced list: %.)', cmd.object_identity, cmd.schema_name;\n     END IF;\n  END LOOP;\nEND;\n$function$\n"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "table": "active_site_umsp_site_map",
+          "column": "active_site_id",
+          "references_table": "active_sites",
+          "references_column": "id",
+          "delete_rule": "CASCADE"
+        }
+      ],
+      "indexes": [
+        {
+          "table": "active_site_umsp_site_map",
+          "index": "active_site_umsp_site_map_pkey",
+          "definition": "CREATE UNIQUE INDEX active_site_umsp_site_map_pkey ON public.active_site_umsp_site_map USING btree (id)"
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "index": "idx_active_site_map_active_site_id",
+          "definition": "CREATE INDEX idx_active_site_map_active_site_id ON public.active_site_umsp_site_map USING btree (active_site_id)"
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "index": "idx_active_site_map_umsp_site",
+          "definition": "CREATE INDEX idx_active_site_map_umsp_site ON public.active_site_umsp_site_map USING btree (umsp_site)"
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "index": "uq_active_site_map_active_site_id",
+          "definition": "CREATE UNIQUE INDEX uq_active_site_map_active_site_id ON public.active_site_umsp_site_map USING btree (active_site_id)"
+        },
+        {
+          "table": "active_site_umsp_site_map",
+          "index": "uq_active_site_map_umsp_site",
+          "definition": "CREATE UNIQUE INDEX uq_active_site_map_umsp_site ON public.active_site_umsp_site_map USING btree (umsp_site)"
+        },
+        {
+          "table": "active_sites",
+          "index": "active_sites_pkey",
+          "definition": "CREATE UNIQUE INDEX active_sites_pkey ON public.active_sites USING btree (id)"
+        },
+        {
+          "table": "active_sites",
+          "index": "active_sites_site_key",
+          "definition": "CREATE UNIQUE INDEX active_sites_site_key ON public.active_sites USING btree (site)"
+        },
+        {
+          "table": "active_sites",
+          "index": "idx_active_site",
+          "definition": "CREATE INDEX idx_active_site ON public.active_sites USING btree (site)"
+        },
+        {
+          "table": "genomic_multi_locus",
+          "index": "genomic_multi_locus_pkey",
+          "definition": "CREATE UNIQUE INDEX genomic_multi_locus_pkey ON public.genomic_multi_locus USING btree (id)"
+        },
+        {
+          "table": "genomic_multi_locus",
+          "index": "idx_gml_group",
+          "definition": "CREATE INDEX idx_gml_group ON public.genomic_multi_locus USING btree (group_id)"
+        },
+        {
+          "table": "genomic_multi_locus",
+          "index": "idx_gml_site_year",
+          "definition": "CREATE INDEX idx_gml_site_year ON public.genomic_multi_locus USING btree (site_key, year)"
+        },
+        {
+          "table": "genomic_multi_locus",
+          "index": "uq_gml",
+          "definition": "CREATE UNIQUE INDEX uq_gml ON public.genomic_multi_locus USING btree (platform, population, group_id, variant)"
+        },
+        {
+          "table": "genomic_single_locus",
+          "index": "genomic_single_locus_pkey",
+          "definition": "CREATE UNIQUE INDEX genomic_single_locus_pkey ON public.genomic_single_locus USING btree (id)"
+        },
+        {
+          "table": "genomic_single_locus",
+          "index": "idx_gsl_gene_codon",
+          "definition": "CREATE INDEX idx_gsl_gene_codon ON public.genomic_single_locus USING btree (gene_id, codon)"
+        },
+        {
+          "table": "genomic_single_locus",
+          "index": "idx_gsl_site_year",
+          "definition": "CREATE INDEX idx_gsl_site_year ON public.genomic_single_locus USING btree (site_key, year)"
+        },
+        {
+          "table": "genomic_single_locus",
+          "index": "uq_gsl",
+          "definition": "CREATE UNIQUE INDEX uq_gsl ON public.genomic_single_locus USING btree (platform, population, variant)"
+        },
+        {
+          "table": "genomic_sites_reference",
+          "index": "genomic_sites_reference_collection_code_key",
+          "definition": "CREATE UNIQUE INDEX genomic_sites_reference_collection_code_key ON public.genomic_sites_reference USING btree (collection_code)"
+        },
+        {
+          "table": "genomic_sites_reference",
+          "index": "genomic_sites_reference_pkey",
+          "definition": "CREATE UNIQUE INDEX genomic_sites_reference_pkey ON public.genomic_sites_reference USING btree (id)"
+        },
+        {
+          "table": "genomic_sites_reference",
+          "index": "genomic_sites_reference_site_name_key",
+          "definition": "CREATE UNIQUE INDEX genomic_sites_reference_site_name_key ON public.genomic_sites_reference USING btree (site_name)"
+        },
+        {
+          "table": "genomic_sites_reference",
+          "index": "idx_gsref_collection_code",
+          "definition": "CREATE INDEX idx_gsref_collection_code ON public.genomic_sites_reference USING btree (collection_code)"
+        },
+        {
+          "table": "health_facility_coordinates",
+          "index": "health_facility_coordinates_pkey",
+          "definition": "CREATE UNIQUE INDEX health_facility_coordinates_pkey ON public.health_facility_coordinates USING btree (id)"
+        },
+        {
+          "table": "health_facility_coordinates",
+          "index": "health_facility_coordinates_site_key",
+          "definition": "CREATE UNIQUE INDEX health_facility_coordinates_site_key ON public.health_facility_coordinates USING btree (site)"
+        },
+        {
+          "table": "health_facility_coordinates",
+          "index": "idx_coords_site",
+          "definition": "CREATE INDEX idx_coords_site ON public.health_facility_coordinates USING btree (site)"
+        },
+        {
+          "table": "umsp_monthly_data",
+          "index": "idx_monthly_district",
+          "definition": "CREATE INDEX idx_monthly_district ON public.umsp_monthly_data USING btree (district)"
+        },
+        {
+          "table": "umsp_monthly_data",
+          "index": "idx_monthly_monthyear",
+          "definition": "CREATE INDEX idx_monthly_monthyear ON public.umsp_monthly_data USING btree (monthyear)"
+        },
+        {
+          "table": "umsp_monthly_data",
+          "index": "idx_monthly_quarter",
+          "definition": "CREATE INDEX idx_monthly_quarter ON public.umsp_monthly_data USING btree (quarter)"
+        },
+        {
+          "table": "umsp_monthly_data",
+          "index": "idx_monthly_region",
+          "definition": "CREATE INDEX idx_monthly_region ON public.umsp_monthly_data USING btree (region)"
+        },
+        {
+          "table": "umsp_monthly_data",
+          "index": "idx_monthly_region_monthyear",
+          "definition": "CREATE INDEX idx_monthly_region_monthyear ON public.umsp_monthly_data USING btree (region, monthyear)"
+        },
+        {
+          "table": "umsp_monthly_data",
+          "index": "idx_monthly_site",
+          "definition": "CREATE INDEX idx_monthly_site ON public.umsp_monthly_data USING btree (site)"
+        },
+        {
+          "table": "umsp_monthly_data",
+          "index": "idx_monthly_site_monthyear",
+          "definition": "CREATE INDEX idx_monthly_site_monthyear ON public.umsp_monthly_data USING btree (site, monthyear)"
+        },
+        {
+          "table": "umsp_monthly_data",
+          "index": "idx_monthly_year",
+          "definition": "CREATE INDEX idx_monthly_year ON public.umsp_monthly_data USING btree (year)"
+        },
+        {
+          "table": "umsp_monthly_data",
+          "index": "umsp_monthly_data_pkey",
+          "definition": "CREATE UNIQUE INDEX umsp_monthly_data_pkey ON public.umsp_monthly_data USING btree (id)"
+        },
+        {
+          "table": "umsp_monthly_data",
+          "index": "uq_site_monthyear",
+          "definition": "CREATE UNIQUE INDEX uq_site_monthyear ON public.umsp_monthly_data USING btree (site, monthyear)"
+        },
+        {
+          "table": "umsp_sites",
+          "index": "umsp_sites_pkey",
+          "definition": "CREATE UNIQUE INDEX umsp_sites_pkey ON public.umsp_sites USING btree (site_id)"
+        }
+      ],
+      "enums": null,
+      "triggers": null
+    }
+  }
+]
