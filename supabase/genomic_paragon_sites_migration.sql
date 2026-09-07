@@ -119,7 +119,8 @@ WHERE NOT EXISTS (
 )
 ORDER BY 1;
 
--- 2c. APPLY — only the unambiguous pairs. Re-runnable.
+-- 2c. APPLY, PASS 1 — non-MIPs rows only. Re-runnable.
+--     Catches sites that exist in the reference solely for Paragon.
 WITH keys AS (
   SELECT DISTINCT site_key FROM public.genomic_single_locus WHERE platform = 'paragon'
   UNION
@@ -142,11 +143,50 @@ WHERE r.id = p.id
   AND p.n_keys_for_row = 1
   AND r.paragon_key IS NULL;
 
--- 2d. VERIFY — how many of the 40 non-MIPs rows now carry an alias?
-SELECT count(*) FILTER (WHERE paragon_key IS NOT NULL) AS aliased,
-       count(*)                                        AS non_mips_rows
-FROM public.genomic_sites_reference
-WHERE collection_code IS NULL;
+-- 2d. APPLY, PASS 2 — whatever pass 1 left, matched against ALL reference rows.
+--     These are facilities sequenced on BOTH platforms (Patongo, Opia, Aboke,
+--     Padibe, Kasambya, Kihihi, Nagongera ...). Their rows already carry a
+--     collection_code, so pass 1 skipped them; one row legitimately holds both
+--     aliases — collection_code = 'AG' AND paragon_key = 'Patongo'.
+WITH keys AS (
+  SELECT DISTINCT site_key FROM public.genomic_single_locus WHERE platform = 'paragon'
+  UNION
+  SELECT DISTINCT site_key FROM public.genomic_multi_locus  WHERE platform = 'paragon'
+),
+unmapped AS (
+  SELECT k.site_key FROM keys k
+  WHERE NOT EXISTS (
+    SELECT 1 FROM public.genomic_sites_reference x WHERE x.paragon_key = k.site_key
+  )
+),
+pairs AS (
+  SELECT u.site_key, r.id,
+         count(*) OVER (PARTITION BY u.site_key) AS n_rows_for_key,
+         count(*) OVER (PARTITION BY r.id)       AS n_keys_for_row
+  FROM unmapped u
+  JOIN public.genomic_sites_reference r
+    ON r.paragon_key IS NULL
+   AND r.site_name ILIKE u.site_key || '%'
+)
+UPDATE public.genomic_sites_reference r
+SET paragon_key = p.site_key
+FROM pairs p
+WHERE r.id = p.id
+  AND p.n_rows_for_key = 1
+  AND p.n_keys_for_row = 1
+  AND r.paragon_key IS NULL;
+
+-- 2e. VERIFY — every Paragon site key should now resolve. Expect still_unmapped = 0.
+WITH keys AS (
+  SELECT DISTINCT site_key FROM public.genomic_single_locus WHERE platform = 'paragon'
+  UNION
+  SELECT DISTINCT site_key FROM public.genomic_multi_locus  WHERE platform = 'paragon'
+)
+SELECT count(*)                                 AS paragon_keys,
+       count(*) FILTER (WHERE r.id IS NOT NULL) AS resolved,
+       count(*) FILTER (WHERE r.id IS NULL)     AS still_unmapped
+FROM keys k
+LEFT JOIN public.genomic_sites_reference r ON r.paragon_key = k.site_key;
 
 -- Anything still unaliased needs a hand-written line, e.g.:
 --   UPDATE public.genomic_sites_reference SET paragon_key = 'Alebtong'
