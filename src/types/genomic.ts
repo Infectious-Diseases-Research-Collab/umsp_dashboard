@@ -5,6 +5,9 @@ export type GenomicPlatform = 'mips' | 'paragon';
 export type LocusMode = 'SingleLocus' | 'Multilocus';
 export type GenomicView = 'Map' | 'Chart' | 'Table';
 export type GenomicMetric = 'prev' | 'freq';
+// Map view year selection: a specific year, or 'RECENT' for the latest year
+// available at each site (which may differ site to site).
+export type MapYearSelection = number | 'RECENT';
 
 export interface GenomicSite {
   site_name: string;
@@ -63,7 +66,8 @@ export interface MultiLocusRow {
 export interface GenomicFilters {
   sites: string[];
   view: GenomicView;
-  yearRange: [number, number];
+  yearRange: [number, number];    // Chart + Table views
+  mapYear: MapYearSelection;      // Map view — 'RECENT' = latest year per site
   locusMode: LocusMode;
   geneId: string;                 // SingleLocus — gene id
   codon: number | 'ALL';          // SingleLocus — codon, 'ALL' only allowed in Map view

@@ -52,55 +52,80 @@ interface Props {
 }
 
 export function GenomicMapView({ filters, siteMeta, slRows, mlRows }: Props) {
-  const rowsForMostRecent = useMemo(() => {
-    // "Map always shows the most recent available year of data". We resolve the
-    // year per site: the latest year where that site has any row of relevance.
-    const relevant = filters.locusMode === 'SingleLocus' ? slRows : mlRows;
-    const yearBySite = new Map<string, number>();
-    for (const r of relevant) {
-      const prev = yearBySite.get(r.site) ?? -Infinity;
-      if (r.year > prev) yearBySite.set(r.site, r.year);
+  // Resolve the year to draw per site: the latest year where that site has a row
+  // that actually satisfies the current selection. Matching on gene+codon (not
+  // just the gene) matters because the MIPs and Paragon panels assay different
+  // codon sets — otherwise a site's newest year can win here and then produce no
+  // pie, hiding the good data it does have for an earlier year.
+  const yearBySite = useMemo(() => {
+    const m = new Map<string, number>();
+    if (filters.locusMode === 'SingleLocus') {
+      for (const r of slRows) {
+        if (r.gene_id !== filters.geneId) continue;
+        if (filters.codon !== 'ALL' && r.codon !== filters.codon) continue;
+        const prev = m.get(r.site) ?? -Infinity;
+        if (r.year > prev) m.set(r.site, r.year);
+      }
+    } else {
+      for (const r of mlRows) {
+        const prev = m.get(r.site) ?? -Infinity;
+        if (r.year > prev) m.set(r.site, r.year);
+      }
     }
-    return { yearBySite, relevant };
-  }, [filters.locusMode, slRows, mlRows]);
+    return m;
+  }, [filters.locusMode, filters.geneId, filters.codon, slRows, mlRows]);
 
   const inferredWt = useMemo(() => buildWildTypeMap(slRows), [slRows]);
 
-  const markers = useMemo(() => {
+  const { markers, missingCoords } = useMemo(() => {
     type Entry = { site: string; year: number; lat: number; lng: number; slices: PieSlice[] };
     const out: Entry[] = [];
-    const { yearBySite } = rowsForMostRecent;
+    const missing = new Set<string>();
 
     for (const [site, year] of yearBySite) {
+      const slAtSite =
+        filters.locusMode === 'SingleLocus'
+          ? slRows.filter((r) => r.site === site && r.year === year)
+          : [];
+      const mlAtSite =
+        filters.locusMode === 'Multilocus'
+          ? mlRows.filter((r) => r.site === site && r.year === year)
+          : [];
+
+      // Prefer the coordinates the view already carries on the row, falling back
+      // to the sites reference. `== null` rather than a falsy test: latitude 0 is
+      // a real place, and Uganda straddles the equator.
+      const rowCoord =
+        slAtSite.find((r) => r.latitude != null && r.longitude != null) ??
+        mlAtSite.find((r) => r.latitude != null && r.longitude != null);
       const meta = siteMeta.get(site);
-      if (!meta?.latitude || !meta?.longitude) continue;
+      const lat = rowCoord?.latitude ?? meta?.latitude;
+      const lng = rowCoord?.longitude ?? meta?.longitude;
+      if (lat == null || lng == null) {
+        // Site has data but nowhere to draw it — surface this rather than
+        // silently shrinking the map.
+        missing.add(site);
+        continue;
+      }
 
       let slices: PieSlice[] = [];
       if (filters.locusMode === 'SingleLocus') {
-        const atSite = slRows.filter((r) => r.site === site && r.year === year);
         if (filters.codon === 'ALL') {
-          slices = buildAllSnpsPie(atSite, filters.geneId, filters.metric, inferredWt);
+          slices = buildAllSnpsPie(slAtSite, filters.geneId, filters.metric, inferredWt);
         } else {
           slices = buildSingleSnpPie(
-            atSite, filters.geneId, filters.codon, filters.metric, inferredWt
+            slAtSite, filters.geneId, filters.codon, filters.metric, inferredWt
           );
         }
       } else {
-        const atSite = mlRows.filter((r) => r.site === site && r.year === year);
-        slices = buildMultiLocusPie(atSite, filters.metric);
+        slices = buildMultiLocusPie(mlAtSite, filters.metric);
       }
 
       if (slices.length === 0) continue;
-      out.push({
-        site,
-        year,
-        lat: meta.latitude,
-        lng: meta.longitude,
-        slices,
-      });
+      out.push({ site, year, lat, lng, slices });
     }
-    return out;
-  }, [filters, rowsForMostRecent, siteMeta, slRows, mlRows, inferredWt]);
+    return { markers: out, missingCoords: Array.from(missing).sort() };
+  }, [filters, yearBySite, siteMeta, slRows, mlRows, inferredWt]);
 
   // Build a legend that reflects the current view.
   const legendSlices: PieSlice[] = useMemo(() => {
@@ -132,23 +157,46 @@ export function GenomicMapView({ filters, siteMeta, slRows, mlRows }: Props) {
   }, [filters.locusMode, filters.codon, markers]);
 
   const metricLabel = filters.metric === 'prev' ? 'Prevalence' : 'Frequency';
-  const title =
+  const yearLabel =
+    filters.mapYear === 'RECENT' ? 'most recent year per site' : String(filters.mapYear);
+  const subject =
     filters.locusMode === 'Multilocus'
-      ? `dhfr/dhps categories — ${metricLabel}`
+      ? 'dhfr/dhps categories'
       : filters.codon === 'ALL'
-      ? `All SNPs — ${metricLabel}`
-      : `Codon ${filters.codon} — ${metricLabel}`;
+      ? 'All SNPs'
+      : `Codon ${filters.codon}`;
+  const title = `${subject} — ${metricLabel} — ${yearLabel}`;
+
+  const missingNotice = missingCoords.length > 0 && (
+    <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900">
+      <span className="font-semibold">
+        {missingCoords.length} {missingCoords.length === 1 ? 'site has' : 'sites have'} data but
+        no coordinates
+      </span>{' '}
+      and cannot be drawn: {missingCoords.join(', ')}. Add them to the site reference
+      (<code>genomic_sites_reference</code>) — for Paragon rows, check that{' '}
+      <code>paragon_key</code> matches the site key.
+    </div>
+  );
 
   if (markers.length === 0) {
     return (
-      <div className="flex h-96 items-center justify-center rounded-lg border border-dashed border-border/60 text-muted-foreground">
-        No genomic data available for the current filters.
+      <div className="space-y-3">
+        {missingNotice}
+        <div className="flex h-96 items-center justify-center rounded-lg border border-dashed border-border/60 px-6 text-center text-muted-foreground">
+          {missingCoords.length > 0
+            ? 'Every site matching these filters is missing coordinates — see the note above.'
+            : filters.mapYear === 'RECENT'
+            ? 'No genomic data available for the current filters.'
+            : `No genomic data for ${filters.mapYear} at the selected sites. Try another year, or "Most recent".`}
+        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-3">
+      {missingNotice}
       <GenomicLegend slices={legendSlices} title={title} />
       <div className="h-[600px] w-full overflow-hidden rounded-lg border">
         <LeafletMap
