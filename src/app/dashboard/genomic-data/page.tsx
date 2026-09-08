@@ -51,6 +51,7 @@ export default function GenomicDataPage() {
     sites: [],
     view: 'Map',
     yearRange: [MIPS_YEARS[0], 2026],
+    mapYear: 'RECENT',
     locusMode: 'SingleLocus',
     geneId: DEFAULT_GENE,
     codon: DEFAULT_CODON,
@@ -69,13 +70,21 @@ export default function GenomicDataPage() {
 
   const effectiveSites = filters.sites.length ? filters.sites : undefined;
 
+  // Map view resolves its own year: 'RECENT' fetches every year and lets the map
+  // pick each site's latest; a specific year is pushed down to the query so sites
+  // with no data that year simply drop off the map.
+  const mapYearRange = useMemo<[number, number] | undefined>(
+    () => (filters.mapYear === 'RECENT' ? undefined : [filters.mapYear, filters.mapYear]),
+    [filters.mapYear]
+  );
+
   const slParams = useMemo(
     () => ({
       sites: effectiveSites,
-      yearRange: filters.view === 'Map' ? undefined : filters.yearRange,
+      yearRange: filters.view === 'Map' ? mapYearRange : filters.yearRange,
       geneId: filters.locusMode === 'SingleLocus' ? filters.geneId : undefined,
     }),
-    [effectiveSites, filters.view, filters.yearRange, filters.locusMode, filters.geneId]
+    [effectiveSites, filters.view, filters.yearRange, mapYearRange, filters.locusMode, filters.geneId]
   );
 
   const { data: slRows, loading: slLoading } = useSupabaseQuery(
@@ -87,10 +96,10 @@ export default function GenomicDataPage() {
   const mlParams = useMemo(
     () => ({
       sites: effectiveSites,
-      yearRange: filters.view === 'Map' ? undefined : filters.yearRange,
+      yearRange: filters.view === 'Map' ? mapYearRange : filters.yearRange,
       groupId: filters.haplotypeGroup,
     }),
-    [effectiveSites, filters.view, filters.yearRange, filters.haplotypeGroup]
+    [effectiveSites, filters.view, filters.yearRange, mapYearRange, filters.haplotypeGroup]
   );
 
   const { data: mlRows, loading: mlLoading } = useSupabaseQuery(
@@ -120,7 +129,8 @@ export default function GenomicDataPage() {
         </p>
         <p>
           <span className="font-medium text-foreground">Map</span> view shows pie charts at each
-          site using the most recent year of data available for that site.
+          site for the selected data year; the default, <em>Most recent</em>, uses the latest
+          year available at each site, so pies may be from different years.
           <span className="font-medium text-foreground"> Chart</span> view plots the selected
           mutation or haplotype category over time, one line per site.
           <span className="font-medium text-foreground"> Tabular</span> view shows the raw

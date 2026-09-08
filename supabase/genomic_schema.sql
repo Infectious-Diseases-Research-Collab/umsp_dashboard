@@ -14,9 +14,11 @@ CREATE TABLE IF NOT EXISTS public.genomic_sites_reference (
   latitude         DOUBLE PRECISION,
   longitude        DOUBLE PRECISION,
   collection_code  TEXT UNIQUE,          -- MIPs abbreviation (AG, TO, KN, ...). NULL for non-MIPs sites.
+  paragon_key      TEXT UNIQUE,          -- Paragon site_key as it appears in `population` (e.g. 'Alebtong'). NULL for non-Paragon sites.
   created_at       TIMESTAMPTZ DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_gsref_collection_code ON public.genomic_sites_reference (collection_code);
+CREATE INDEX IF NOT EXISTS idx_gsref_paragon_key ON public.genomic_sites_reference (paragon_key);
 
 -- ============================================================================
 -- 2. Single-locus rows (combined MIPs + Paragon)
@@ -96,7 +98,8 @@ FROM public.genomic_single_locus sl
 LEFT JOIN public.genomic_sites_reference sr_code
        ON sl.platform = 'mips'    AND sr_code.collection_code = sl.site_key
 LEFT JOIN public.genomic_sites_reference sr_name
-       ON sl.platform = 'paragon' AND sr_name.site_name       = sl.site_key;
+       ON sl.platform = 'paragon'
+      AND (sr_name.paragon_key = sl.site_key OR sr_name.site_name = sl.site_key);
 
 CREATE OR REPLACE VIEW public.genomic_multi_locus_v AS
 SELECT
@@ -122,7 +125,8 @@ FROM public.genomic_multi_locus ml
 LEFT JOIN public.genomic_sites_reference sr_code
        ON ml.platform = 'mips'    AND sr_code.collection_code = ml.site_key
 LEFT JOIN public.genomic_sites_reference sr_name
-       ON ml.platform = 'paragon' AND sr_name.site_name       = ml.site_key;
+       ON ml.platform = 'paragon'
+      AND (sr_name.paragon_key = ml.site_key OR sr_name.site_name = ml.site_key);
 
 -- ============================================================================
 -- 5. Row-level security — match the existing pattern in rls-policies.sql.

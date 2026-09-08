@@ -37,6 +37,8 @@ const COLUMN_MAPPINGS: Record<string, Record<string, string>> = {
     'Latitude': 'latitude',
     'Longitude': 'longitude',
     'CollectionCode': 'collection_code',
+    'paragon_key': 'paragon_key',
+    'ParagonKey': 'paragon_key',
   },
   genomic_single_locus: {
     'population': 'population',

@@ -47,10 +47,22 @@ export function GenomicControls({
 
   const allowsAllSnps = filters.view === 'Map';
 
+  // The year window actually in force: Map view is driven by its own single-year
+  // selection ('RECENT' spans everything), other views by the start/end range.
+  const effectiveYears = useMemo<[number, number]>(
+    () =>
+      filters.view === 'Map'
+        ? filters.mapYear === 'RECENT'
+          ? [yearMin, yearMax]
+          : [filters.mapYear, filters.mapYear]
+        : filters.yearRange,
+    [filters.view, filters.mapYear, filters.yearRange, yearMin, yearMax]
+  );
+
   // Codon list, filtered by year-range × platform availability.
   const availableCodons = useMemo(() => {
     if (!gene) return [] as number[];
-    const [y0, y1] = filters.yearRange;
+    const [y0, y1] = effectiveYears;
     const intersectsMips    = y1 >= MIPS_YEARS[0] && y0 <= MIPS_YEARS[1];
     const intersectsParagon = y1 >= PARAGON_YEARS[0];
     return gene.codons.filter((c) => {
@@ -58,7 +70,7 @@ export function GenomicControls({
       if (gene.paragonOnlyCodons?.includes(c)) return intersectsParagon;
       return true;
     });
-  }, [gene, filters.yearRange]);
+  }, [gene, effectiveYears]);
 
   // If the currently-selected codon is disabled by platform/year, drop it.
   const codonValue: string =
@@ -69,6 +81,9 @@ export function GenomicControls({
       : '';
 
   const yearList = Array.from({ length: yearMax - yearMin + 1 }, (_, i) => yearMin + i);
+  // Map view lists newest first, since that is what people reach for.
+  const mapYearList = [...yearList].reverse();
+  const mapYearValue = filters.mapYear === 'RECENT' ? 'RECENT' : String(filters.mapYear);
 
   return (
     <div className="space-y-4">
@@ -101,43 +116,63 @@ export function GenomicControls({
         </div>
       </div>
 
-      {/* Row 2: Year range (hidden for Map) */}
-      {filters.view !== 'Map' && (
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+      {/* Row 2: Map picks a single data year; Chart and Table use a year range */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        {filters.view === 'Map' ? (
           <div>
             <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Start Year
+              Data Year
             </Label>
             <Select
-              value={String(filters.yearRange[0])}
-              onValueChange={(v) => set('yearRange', [Number(v), filters.yearRange[1]])}
+              value={mapYearValue}
+              onValueChange={(v) => set('mapYear', v === 'RECENT' ? 'RECENT' : Number(v))}
             >
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                {yearList.map((y) => (
+                <SelectItem value="RECENT">Most recent</SelectItem>
+                {mapYearList.map((y) => (
                   <SelectItem key={y} value={String(y)}>{y}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
-          <div>
-            <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              End Year
-            </Label>
-            <Select
-              value={String(filters.yearRange[1])}
-              onValueChange={(v) => set('yearRange', [filters.yearRange[0], Number(v)])}
-            >
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {yearList.map((y) => (
-                  <SelectItem key={y} value={String(y)}>{y}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      )}
+        ) : (
+          <>
+            <div>
+              <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Start Year
+              </Label>
+              <Select
+                value={String(filters.yearRange[0])}
+                onValueChange={(v) => set('yearRange', [Number(v), filters.yearRange[1]])}
+              >
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {yearList.map((y) => (
+                    <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                End Year
+              </Label>
+              <Select
+                value={String(filters.yearRange[1])}
+                onValueChange={(v) => set('yearRange', [filters.yearRange[0], Number(v)])}
+              >
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {yearList.map((y) => (
+                    <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </>
+        )}
+      </div>
 
       {/* Row 3: Locus mode / Gene or Haplotype / SNP or category */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">

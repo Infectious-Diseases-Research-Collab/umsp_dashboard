@@ -41,7 +41,12 @@ export async function fetchSingleLocusData(params: {
     if (params.yearRange) q = q.gte('year', params.yearRange[0]).lte('year', params.yearRange[1]);
     if (params.geneId) q = q.eq('gene_id', params.geneId);
     if (params.codon != null) q = q.eq('codon', params.codon);
-    const { data, error } = await q.range(from, from + PAGE_SIZE - 1);
+    // Paginating with .range() across separate requests needs a stable sort —
+    // without one Postgres may return rows in a different order per page,
+    // silently skipping or duplicating some.
+    const { data, error } = await q
+      .order('id', { ascending: true })
+      .range(from, from + PAGE_SIZE - 1);
     if (error) throw error;
     const page = (data ?? []) as SingleLocusRow[];
     rows.push(...page);
@@ -64,7 +69,10 @@ export async function fetchMultiLocusData(params: {
     if (params.sites && params.sites.length > 0) q = q.in('site', params.sites);
     if (params.yearRange) q = q.gte('year', params.yearRange[0]).lte('year', params.yearRange[1]);
     if (params.groupId) q = q.eq('group_id', params.groupId);
-    const { data, error } = await q.range(from, from + PAGE_SIZE - 1);
+    // See the note in fetchSingleLocusData — stable sort required for paging.
+    const { data, error } = await q
+      .order('id', { ascending: true })
+      .range(from, from + PAGE_SIZE - 1);
     if (error) throw error;
     const page = (data ?? []) as MultiLocusRow[];
     rows.push(...page);

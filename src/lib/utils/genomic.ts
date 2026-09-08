@@ -14,22 +14,29 @@ import {
 } from '@/types/genomic';
 
 // ============================================================================
-// Parse a variant string from the ML file: "PF3D7_0417200.1:51_59_108_164:I_R_N_I"
-// into an array of { gene, codon, allele } records.
+// Parse a variant string from the ML file into { gene, codon, allele } records.
+//
+// A haplotype may span several genes, one ";"-separated block per gene:
+//   "PF3D7_0417200.1:51_59_108_164:I_R_N_I;PF3D7_0810800.1:437_540_581_613:G_E_A_A"
+// Single-gene strings ("PF3D7_0709000.1:76:T") are just the one-block case.
 // ============================================================================
 export function parseHaplotypeVariant(
   variant: string
 ): { gene: string; codon: number; allele: string }[] {
-  const [gene, codonPart, allelePart] = variant.split(':');
-  if (!gene || !codonPart || !allelePart) return [];
-  const codons = codonPart.split('_');
-  const alleles = allelePart.split('_');
-  if (codons.length !== alleles.length) return [];
-  return codons.map((c, i) => ({
-    gene,
-    codon: Number(c),
-    allele: alleles[i],
-  }));
+  const out: { gene: string; codon: number; allele: string }[] = [];
+  for (const block of variant.split(';')) {
+    const [gene, codonPart, allelePart] = block.split(':');
+    if (!gene || !codonPart || !allelePart) continue;
+    const codons = codonPart.split('_');
+    const alleles = allelePart.split('_');
+    // A malformed block is skipped rather than discarding the whole haplotype;
+    // classifyDhfrDhpsHaplotype still requires all 8 codons before it categorises.
+    if (codons.length !== alleles.length) continue;
+    for (let i = 0; i < codons.length; i++) {
+      out.push({ gene, codon: Number(codons[i]), allele: alleles[i] });
+    }
+  }
+  return out;
 }
 
 // ============================================================================
