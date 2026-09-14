@@ -37,12 +37,22 @@ Supabase clients: `src/lib/supabase/client.ts` (browser) and `src/lib/supabase/s
 
 ### Database Schema
 
-**Authority:** `supabase/umsp-dashboard.json` is the single source of truth for the database schema. It contains the complete column list, RLS policies, RLS status, and table privileges for every table and view in the `public` schema, exported directly from Supabase. Always consult this file when reasoning about table structure, types, or access rules. Other `.sql` files in `supabase/` are historical/unused and should be ignored.
+**Authority:** `supabase/migrations/` is the single source of truth for the database schema, managed via the Supabase CLI (project ref `wejircvuzfdjgiveergq`). The full column list, RLS policies, RLS status, and table privileges for every table in the `public` schema are captured there — always consult the migration files when reasoning about table structure, types, or access rules. The older `supabase/umsp-dashboard.json` snapshot and hand-written `.sql` files (`schema.sql`, `functions.sql`, `indexes.sql`, `rls-policies.sql`, `roles.sql`, `genomic_*.sql`) predate the migration setup, are stale, and have been moved to `supabase/archive/` for historical reference only — do not consult them for current schema state.
+
+Schema changes going forward should be made as new migrations, not hand-run SQL in the Supabase dashboard:
+```bash
+supabase migration new <description>   # create a new migration file, then edit its SQL
+supabase db push                       # apply pending local migrations to the linked project
+supabase migration list                # confirm local/remote migration history match
+```
+`supabase db pull` requires Docker running locally (it spins up a shadow database to diff schemas).
 
 Primary tables used by the dashboard:
 - **`umsp_monthly_data`** — monthly surveillance records per site. Upsert conflict key: `site,monthyear`.
 - **`health_facility_coordinates`** — lat/lon per site (42 rows). Conflict key: `site`.
 - **`active_sites`** — list of currently active sites (42 rows). Conflict key: `site`.
+
+Other tables present in the schema (not currently read by the dashboard app code, per the migration): `umsp_sites`, `active_site_umsp_site_map`, `genomic_sites_reference`, `genomic_single_locus`, `genomic_multi_locus`.
 
 All tables have RLS enabled: `SELECT` requires `authenticated`; `INSERT`/`UPDATE`/`DELETE` require `is_admin()`. Explicit GRANTs to `anon`, `authenticated`, and `service_role` are already in place (compatible with Supabase's Oct 2026 default-grants change).
 
