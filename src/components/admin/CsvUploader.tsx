@@ -36,7 +36,7 @@ interface Props {
 
 export function CsvUploader({ onUploadComplete }: Props) {
   const [targetTable, setTargetTable] = useState<TargetTable>('umsp_monthly_data');
-  const [mode, setMode] = useState<UploadMode>('replace');
+  const [mode, setMode] = useState<UploadMode>('append');
   const [platform, setPlatform] = useState<Platform>('paragon');
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<Record<string, string>[]>([]);
