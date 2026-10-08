@@ -1,9 +1,9 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { Download, Table as TableIcon } from 'lucide-react';
+import { Table as TableIcon } from 'lucide-react';
 import { MultiSelect } from '@/components/shared/MultiSelect';
 import { DataTable } from '@/components/data-explorer/DataTable';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useAdminAuth } from '@/lib/hooks/use-admin-auth';
 import { useSupabaseQuery } from '@/lib/hooks/use-supabase-query';
 import {
   fetchDistinctSites,
@@ -21,7 +22,6 @@ import {
 import { fetchMappedActiveUmspSiteNames } from '@/lib/queries/active-sites';
 import { fetchTimeSeriesData } from '@/lib/queries/time-series';
 import { fetchMapData } from '@/lib/queries/map-data';
-import { downloadCsv } from '@/lib/utils/csv-export';
 import { formatDate } from '@/lib/utils/format';
 import { matchActiveSite } from '@/lib/utils/indicators';
 import { INDICATOR_DB_COLUMNS, INDICATOR_DISPLAY_NAMES, INDICATOR_UNITS, LEVEL_INDICATOR_GROUPS, IndicatorLabel } from '@/types/indicators';
@@ -97,6 +97,17 @@ export default function DashboardPage() {
   const [siteScope, setSiteScope] = useState<SiteScope>('All Sites');
   const [viewType, setViewType] = useState<ViewType>('Map');
   const [showRawData, setShowRawData] = useState(false);
+
+  // Raw per-row data is admin-only. The guard below is authoritative, not just
+  // cosmetic: it coerces the state back rather than only hiding the controls,
+  // so a non-admin cannot land on the table via stale state.
+  const { isAdmin } = useAdminAuth();
+
+  useEffect(() => {
+    if (isAdmin) return;
+    setViewType((prev) => (prev === 'Table' ? 'Map' : prev));
+    setShowRawData(false);
+  }, [isAdmin]);
 
   const { data: allSites } = useSupabaseQuery(() => fetchDistinctSites());
   const { data: activeSites } = useSupabaseQuery(() => fetchMappedActiveUmspSiteNames());
@@ -251,13 +262,6 @@ export default function DashboardPage() {
     });
   }, [tableRows, selectedSites, periodKeys, periodLabels, primaryMetric, secondMetric, timeScale]);
 
-  const handleDownloadRaw = useCallback(() => {
-    const sourceRows = viewType === 'Map' ? (mapRows ?? []) : (tableRows ?? []);
-    if (!sourceRows.length) return;
-
-    downloadCsv(sourceRows as unknown as Record<string, unknown>[], `raw_data_${viewType.toLowerCase()}_${new Date().toISOString().split('T')[0]}.csv`);
-  }, [mapRows, tableRows, viewType]);
-
   const renderTimeScaleRange = () => {
     if (timeScale === 'Monthly') {
       return (
@@ -374,7 +378,7 @@ export default function DashboardPage() {
                 <SelectContent>
                   <SelectItem value="Chart">Chart</SelectItem>
                   <SelectItem value="Map">Map</SelectItem>
-                  <SelectItem value="Table">Tabular Data</SelectItem>
+                  {isAdmin && <SelectItem value="Table">Tabular Data</SelectItem>}
                 </SelectContent>
               </Select>
             </div>
@@ -467,15 +471,14 @@ export default function DashboardPage() {
               </Select>
             </div>
 
-            <div className="flex items-end gap-2">
-              <Button variant="outline" onClick={() => setShowRawData((prev) => !prev)}>
-                <TableIcon className="mr-1 h-4 w-4" />
-                {showRawData ? 'Hide Data' : 'Show Data'}
-              </Button>
-              <Button variant="outline" onClick={handleDownloadRaw}>
-                <Download className="mr-1 h-4 w-4" /> Download CSV
-              </Button>
-            </div>
+            {isAdmin && (
+              <div className="flex items-end gap-2">
+                <Button variant="outline" onClick={() => setShowRawData((prev) => !prev)}>
+                  <TableIcon className="mr-1 h-4 w-4" />
+                  {showRawData ? 'Hide Data' : 'Show Data'}
+                </Button>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -525,7 +528,7 @@ export default function DashboardPage() {
                         : {}),
                       legend: { orientation: 'h', y: -0.25 },
                     }}
-                    config={{ responsive: true, displaylogo: false }}
+                    config={{ responsive: true, displaylogo: false, modeBarButtonsToRemove: ['toImage'] }}
                     style={{ width: '100%' }}
                   />
                 )}
@@ -554,7 +557,7 @@ export default function DashboardPage() {
             </Card>
           )}
 
-          {(showRawData || viewType === 'Table') && (
+          {isAdmin && (showRawData || viewType === 'Table') && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Raw Tabular Data</CardTitle>

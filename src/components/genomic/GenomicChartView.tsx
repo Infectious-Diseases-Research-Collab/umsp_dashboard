@@ -95,7 +95,7 @@ export function GenomicChartView({ filters, slRows, mlRows }: Props) {
           yaxis: { title: `Mutant ${metricLabel}`, range: [0, 1] },
           legend: { orientation: 'h', y: -0.2 },
         }}
-        config={{ responsive: true, displaylogo: false }}
+        config={{ responsive: true, displaylogo: false, modeBarButtonsToRemove: ['toImage'] }}
         style={{ width: '100%' }}
       />
     );
@@ -155,7 +155,7 @@ export function GenomicChartView({ filters, slRows, mlRows }: Props) {
     <Plot
       data={traces}
       layout={layout}
-      config={{ responsive: true, displaylogo: false }}
+      config={{ responsive: true, displaylogo: false, modeBarButtonsToRemove: ['toImage'] }}
       style={{ width: '100%' }}
     />
   );

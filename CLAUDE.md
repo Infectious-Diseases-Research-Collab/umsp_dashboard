@@ -35,6 +35,24 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbG...
 
 Supabase clients: `src/lib/supabase/client.ts` (browser) and `src/lib/supabase/server.ts` (server components/API routes).
 
+**There is no self-signup.** Accounts are created by an administrator in the Supabase
+dashboard (Authentication → Users), and "Allow new users to sign up" must stay disabled
+under Authentication → Sign In / Providers. `src/app/login/page.tsx` offers sign-in and
+password reset only; removing the UI is not enough on its own, because `auth.signUp` can
+be called directly with the public anon key.
+
+**Data access is restricted to `authenticated`, and raw rows to admins.** See
+`supabase/lockdown_access.sql`, which must be run by hand — it sets `security_invoker` on
+the genomic views (without it they run with their owner's privileges and bypass RLS
+entirely, which exposed all genomic rows to unauthenticated callers), narrows the blanket
+`GRANT ALL`, and makes `refresh_active_site_umsp_site_map()` admin-only. In the UI, the
+raw tabular views on both dashboards are gated on `useAdminAuth()`.
+
+Note the limit of all this: both dashboards query Supabase from the browser, so any
+signed-in user can read what their charts display via devtools. The controls above stop
+unauthenticated access and casual export; they are not a technical barrier to a
+legitimate user copying what they can see.
+
 ### Database Schema (3 tables)
 
 - **`umsp_monthly_data`** — monthly surveillance records per site (`site`, `region`, `district`, `monthyear`, `year`, `quarter`, + 8 indicator columns). Upsert conflict key: `site,monthyear`.
@@ -55,17 +73,20 @@ Client components use `useSupabaseQuery<T>(queryFn, deps)` from `src/lib/hooks/u
 
 | Route | Purpose |
 |---|---|
-| `/dashboard/overview` | KPI boxes, regional summary table, data quality chart |
-| `/dashboard/map` | react-leaflet map with circles, heatmap, cluster, and trend overlays |
-| `/dashboard/time-series` | Plotly line/bar charts with seasonal and trend analysis |
-| `/dashboard/data-explorer` | TanStack Table for tabular data with column selection |
-| `/dashboard/reports` | @react-pdf/renderer report config + preview; PDF served from `POST /api/report` |
+| `/dashboard` | Combined epi dashboard: Map / Chart / Tabular views in one page, with shared filters. Tabular is admin-only |
+| `/dashboard/genomic-data` | Genomic dashboard: Map (pie markers) / Chart / Tabular views, single-locus and multilocus. Tabular is admin-only |
+| `/dashboard/methods` | Malaria Indicators reference table with definitions |
+| `/dashboard/site-summary` | Facility table plus the labelled site map image |
+| `/dashboard/map-export` | Standalone Leaflet site map; live but absent from the nav |
 | `/admin` | CSV uploader for all 3 tables; data sent to `POST /api/upload` |
 
 ### API Routes
 
 - `POST /api/upload` — parses CSV rows client-side (PapaParse), maps column names, upserts to Supabase in 500-row chunks. Supports `replace` mode (deletes all rows first) or append.
-- `POST /api/report` — fetches all data server-side, aggregates stats, renders PDF with `@react-pdf/renderer`.
+
+There is deliberately no data-export route. `POST /api/report` and the CSV download
+buttons were removed, along with Plotly's PNG export (`modeBarButtonsToRemove:
+['toImage']`); don't reintroduce them without a decision about data release.
 
 ### Conventions
 
