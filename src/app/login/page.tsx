@@ -105,7 +105,7 @@ export default function LoginPage() {
       return;
     }
 
-    toast({ title: 'Reset link sent', description: 'Check your inbox for password reset instructions.' });
+    toast({ title: 'Reset link sent', description: 'Check your inbox for password reset instructions. If it is not there, check your spam or junk folder.' });
     setLoadingAction(null);
     setMode('signin');
   };
@@ -188,6 +188,7 @@ export default function LoginPage() {
                   <p className="font-medium">Verification email sent to:</p>
                   <p>{email}</p>
                   <p>After confirming your account from your email, return and sign in.</p>
+                  <p>Not there after a few minutes? Check your spam or junk folder.</p>
                   <Button type="button" className="w-full" onClick={() => setMode('signin')}>
                     Back to sign in
                   </Button>

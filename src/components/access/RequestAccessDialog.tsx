@@ -49,7 +49,7 @@ export function RequestAccessDialog({ open, onOpenChange, email, onSubmitted, pr
       return;
     }
 
-    toast({ title: 'Request sent', description: 'An administrator will review it and you will be notified by email.' });
+    toast({ title: 'Request sent', description: 'An administrator will review it and you will be notified by email. Check your spam or junk folder if you do not see it.' });
     setReason('');
     onOpenChange(false);
     onSubmitted();

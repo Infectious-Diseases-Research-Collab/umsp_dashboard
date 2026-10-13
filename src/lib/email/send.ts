@@ -29,12 +29,22 @@ export async function sendEmail(to: string | string[], subject: string, text: st
     return false;
   }
 
+  const from = process.env.SMTP_FROM ?? process.env.SMTP_USER;
+  // Low-volume automated mail tends to land in spam; ask readers to allow-list us.
+  const sender = from?.match(/<([^>]+)>/)?.[1] ?? from;
+  const footer = [
+    '',
+    '--',
+    'UMSP Malaria Surveillance Dashboard',
+    `To make sure these emails reach your inbox, add ${sender} to your contacts or mark this message as "Not spam".`,
+  ].join('\n');
+
   try {
     await transport.sendMail({
-      from: process.env.SMTP_FROM ?? process.env.SMTP_USER,
+      from,
       to: recipients,
       subject,
-      text,
+      text: text + '\n' + footer,
     });
     return true;
   } catch (error) {
