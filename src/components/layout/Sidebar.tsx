@@ -3,19 +3,15 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BarChart3, BookOpen, Building2, Dna, LogOut } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAccessLevel } from '@/lib/hooks/use-access-level';
+import { getNavItems } from './nav-items';
 import { createClient } from '@/lib/supabase/client';
-
-const navItems = [
-  { href: '/dashboard/methods', label: 'Malaria Indicators', icon: BookOpen },
-  { href: '/dashboard/site-summary', label: 'Site Summary', icon: Building2 },
-  { href: '/dashboard', label: 'Epi Dashboard', icon: BarChart3 },
-  { href: '/dashboard/genomic-data', label: 'Genomic Dashboard', icon: Dna },
-];
 
 export function Sidebar() {
   const pathname = usePathname();
+  const navItems = getNavItems(useAccessLevel().hasFullAccess);
 
   const handleSignOut = async () => {
     const supabase = createClient();

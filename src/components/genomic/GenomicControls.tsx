@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { MultiSelect } from '@/components/shared/MultiSelect';
+import { Button } from '@/components/ui/button';
 import {
   GenomicFilters,
   GenomicView,
@@ -28,8 +29,9 @@ interface Props {
   sites: string[];
   yearMin: number;
   yearMax: number;
-  /** Raw per-row data is admin-only; hides the Tabular Data view for everyone else. */
-  isAdmin: boolean;
+  onDownloadCsv: () => void;
+  /** Tabular view and CSV download need Full access; hidden for Standard users. */
+  canViewData: boolean;
 }
 
 export function GenomicControls({
@@ -38,7 +40,8 @@ export function GenomicControls({
   sites,
   yearMin,
   yearMax,
-  isAdmin,
+  onDownloadCsv,
+  canViewData,
 }: Props) {
   const set = <K extends keyof GenomicFilters>(key: K, value: GenomicFilters[K]) =>
     onChange({ ...filters, [key]: value });
@@ -98,7 +101,7 @@ export function GenomicControls({
             <SelectContent>
               <SelectItem value="Map">Map</SelectItem>
               <SelectItem value="Chart">Chart</SelectItem>
-              {isAdmin && <SelectItem value="Table">Tabular Data</SelectItem>}
+              {canViewData && <SelectItem value="Table">Tabular Data</SelectItem>}
             </SelectContent>
           </Select>
         </div>
@@ -257,6 +260,12 @@ export function GenomicControls({
           </Select>
         </div>
       </div>
+
+      {canViewData && (
+        <div className="flex justify-end">
+          <Button variant="outline" onClick={onDownloadCsv}>Download CSV</Button>
+        </div>
+      )}
     </div>
   );
 }

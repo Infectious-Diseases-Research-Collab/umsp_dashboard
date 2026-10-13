@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { GenomicControls } from '@/components/genomic/GenomicControls';
 import { GenomicChartView } from '@/components/genomic/GenomicChartView';
 import { GenomicTableView } from '@/components/genomic/GenomicTableView';
-import { useAdminAuth } from '@/lib/hooks/use-admin-auth';
+import { useAccessLevel } from '@/lib/hooks/use-access-level';
 import { useSupabaseQuery } from '@/lib/hooks/use-supabase-query';
 import {
   fetchGenomicSites,
@@ -15,6 +15,7 @@ import {
   fetchSingleLocusData,
   fetchMultiLocusData,
 } from '@/lib/queries/genomic';
+import { downloadCsv } from '@/lib/utils/csv-export';
 import {
   GenomicFilters,
   GenomicSite,
@@ -31,9 +32,10 @@ const DEFAULT_GENE = 'PF3D7_1343700.1'; // pfkelch13
 const DEFAULT_CODON = 675;
 
 export default function GenomicDataPage() {
-  // Raw per-row data is admin-only. Coercing the filter back (rather than only
-  // hiding the option) keeps a non-admin off the table view via stale state.
-  const { isAdmin } = useAdminAuth();
+  // Raw per-row data and downloads need Full access. Coercing the filter back
+  // (rather than only hiding the option) keeps a Standard user off the table
+  // view via stale state.
+  const { hasFullAccess } = useAccessLevel();
 
   const { data: sitesData } = useSupabaseQuery(() => fetchGenomicSites());
   const { data: yearRange } = useSupabaseQuery(() => fetchGenomicYearRange());
@@ -73,9 +75,9 @@ export default function GenomicDataPage() {
   }, [yearRange]);
 
   useEffect(() => {
-    if (isAdmin) return;
+    if (hasFullAccess) return;
     setFilters((f) => (f.view === 'Table' ? { ...f, view: 'Map' } : f));
-  }, [isAdmin]);
+  }, [hasFullAccess]);
 
   const effectiveSites = filters.sites.length ? filters.sites : undefined;
 
@@ -119,6 +121,14 @@ export default function GenomicDataPage() {
 
   const loading = filters.locusMode === 'SingleLocus' ? slLoading : mlLoading;
 
+  const handleDownload = useCallback(() => {
+    const rows =
+      filters.locusMode === 'SingleLocus' ? (slRows ?? []) : (mlRows ?? []);
+    if (!rows.length) return;
+    const fname = `genomic_${filters.locusMode === 'SingleLocus' ? 'single_locus' : 'multi_locus'}_${new Date().toISOString().split('T')[0]}.csv`;
+    downloadCsv(rows as unknown as Record<string, unknown>[], fname);
+  }, [filters.locusMode, slRows, mlRows]);
+
   return (
     <div className="space-y-6">
       <div className="rounded-xl border border-border/70 bg-white px-5 py-4 text-sm leading-relaxed text-muted-foreground">
@@ -134,7 +144,7 @@ export default function GenomicDataPage() {
           year available at each site, so pies may be from different years.
           <span className="font-medium text-foreground"> Chart</span> view plots the selected
           mutation or haplotype category over time, one line per site.
-          {isAdmin && (
+          {hasFullAccess && (
             <>
               <span className="font-medium text-foreground"> Tabular</span> view shows the raw
               per-population rows.
@@ -154,7 +164,8 @@ export default function GenomicDataPage() {
             sites={siteNames}
             yearMin={yearMin}
             yearMax={yearMax}
-            isAdmin={isAdmin}
+            onDownloadCsv={handleDownload}
+            canViewData={hasFullAccess}
           />
         </CardContent>
       </Card>
@@ -184,7 +195,7 @@ export default function GenomicDataPage() {
                 mlRows={mlRows ?? []}
               />
             )}
-            {isAdmin && filters.view === 'Table' && (
+            {hasFullAccess && filters.view === 'Table' && (
               <GenomicTableView
                 mode={filters.locusMode}
                 slRows={slRows ?? []}

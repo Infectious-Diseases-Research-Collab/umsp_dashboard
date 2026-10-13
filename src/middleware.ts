@@ -1,5 +1,6 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { getRole, hasFullAccess } from '@/lib/auth/roles';
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
@@ -46,11 +47,19 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Protect upload API - admin only
-  if (pathname.startsWith('/api/upload')) {
+  // Protect upload and admin APIs - admin only
+  if (pathname.startsWith('/api/upload') || pathname.startsWith('/api/admin/')) {
     if (!user || user.app_metadata?.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+  }
+
+  // PDF reports are a Full-access feature
+  if (pathname.startsWith('/api/report') && !hasFullAccess(getRole(user))) {
+    return NextResponse.json({ error: 'Full access required' }, { status: 403 });
+  }
+  if (pathname.startsWith('/dashboard/reports') && !hasFullAccess(getRole(user))) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   // Log every dashboard/admin page visit

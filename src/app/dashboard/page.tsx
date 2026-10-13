@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { Table as TableIcon } from 'lucide-react';
+import { Download, Table as TableIcon } from 'lucide-react';
 import { MultiSelect } from '@/components/shared/MultiSelect';
 import { DataTable } from '@/components/data-explorer/DataTable';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useAdminAuth } from '@/lib/hooks/use-admin-auth';
+import { useAccessLevel } from '@/lib/hooks/use-access-level';
 import { useSupabaseQuery } from '@/lib/hooks/use-supabase-query';
 import {
   fetchDistinctSites,
@@ -22,6 +22,7 @@ import {
 import { fetchMappedActiveUmspSiteNames } from '@/lib/queries/active-sites';
 import { fetchTimeSeriesData } from '@/lib/queries/time-series';
 import { fetchMapData } from '@/lib/queries/map-data';
+import { downloadCsv } from '@/lib/utils/csv-export';
 import { formatDate } from '@/lib/utils/format';
 import { matchActiveSite } from '@/lib/utils/indicators';
 import { INDICATOR_DB_COLUMNS, INDICATOR_DISPLAY_NAMES, INDICATOR_UNITS, LEVEL_INDICATOR_GROUPS, IndicatorLabel } from '@/types/indicators';
@@ -98,16 +99,16 @@ export default function DashboardPage() {
   const [viewType, setViewType] = useState<ViewType>('Map');
   const [showRawData, setShowRawData] = useState(false);
 
-  // Raw per-row data is admin-only. The guard below is authoritative, not just
-  // cosmetic: it coerces the state back rather than only hiding the controls,
-  // so a non-admin cannot land on the table via stale state.
-  const { isAdmin } = useAdminAuth();
+  // Raw per-row data and downloads need Full access. The guard below coerces
+  // the state back rather than only hiding the controls, so a Standard user
+  // cannot land on the table via stale state.
+  const { hasFullAccess } = useAccessLevel();
 
   useEffect(() => {
-    if (isAdmin) return;
+    if (hasFullAccess) return;
     setViewType((prev) => (prev === 'Table' ? 'Map' : prev));
     setShowRawData(false);
-  }, [isAdmin]);
+  }, [hasFullAccess]);
 
   const { data: allSites } = useSupabaseQuery(() => fetchDistinctSites());
   const { data: activeSites } = useSupabaseQuery(() => fetchMappedActiveUmspSiteNames());
@@ -262,6 +263,13 @@ export default function DashboardPage() {
     });
   }, [tableRows, selectedSites, periodKeys, periodLabels, primaryMetric, secondMetric, timeScale]);
 
+  const handleDownloadRaw = useCallback(() => {
+    const sourceRows = viewType === 'Map' ? (mapRows ?? []) : (tableRows ?? []);
+    if (!sourceRows.length) return;
+
+    downloadCsv(sourceRows as unknown as Record<string, unknown>[], `raw_data_${viewType.toLowerCase()}_${new Date().toISOString().split('T')[0]}.csv`);
+  }, [mapRows, tableRows, viewType]);
+
   const renderTimeScaleRange = () => {
     if (timeScale === 'Monthly') {
       return (
@@ -360,7 +368,7 @@ export default function DashboardPage() {
         <p>Use the filters below to select sites, time period, and metric. For a full list of MRCs and their status, visit the <Link href="/dashboard/site-summary" className="font-medium text-foreground underline underline-offset-4 hover:text-foreground/70">Site Summary</Link> page.</p>
         <p><span className="font-medium text-foreground">Chart</span> view plots your metric over time for selected sites. Use the Primary and Secondary metrics to compare two indicators simultaneously.</p>
         <p><span className="font-medium text-foreground">Map</span> view shows each site&apos;s value spatially — when a time range is selected, values are averaged across all months in that range.</p>
-        <p><span className="font-medium text-foreground">Table</span> view shows the underlying monthly records.</p>
+        {hasFullAccess && <p><span className="font-medium text-foreground">Table</span> view shows the underlying monthly records.</p>}
         <p className="mt-2">For a description of each indicator and the difference between facility-level and target area data, see the <Link href="/dashboard/methods" className="font-medium text-foreground underline underline-offset-4 hover:text-foreground/70">Malaria Indicators</Link> page.</p>
       </div>
 
@@ -378,7 +386,7 @@ export default function DashboardPage() {
                 <SelectContent>
                   <SelectItem value="Chart">Chart</SelectItem>
                   <SelectItem value="Map">Map</SelectItem>
-                  {isAdmin && <SelectItem value="Table">Tabular Data</SelectItem>}
+                  {hasFullAccess && <SelectItem value="Table">Tabular Data</SelectItem>}
                 </SelectContent>
               </Select>
             </div>
@@ -471,11 +479,14 @@ export default function DashboardPage() {
               </Select>
             </div>
 
-            {isAdmin && (
+            {hasFullAccess && (
               <div className="flex items-end gap-2">
                 <Button variant="outline" onClick={() => setShowRawData((prev) => !prev)}>
                   <TableIcon className="mr-1 h-4 w-4" />
                   {showRawData ? 'Hide Data' : 'Show Data'}
+                </Button>
+                <Button variant="outline" onClick={handleDownloadRaw}>
+                  <Download className="mr-1 h-4 w-4" /> Download CSV
                 </Button>
               </div>
             )}
@@ -528,7 +539,7 @@ export default function DashboardPage() {
                         : {}),
                       legend: { orientation: 'h', y: -0.25 },
                     }}
-                    config={{ responsive: true, displaylogo: false, modeBarButtonsToRemove: ['toImage'] }}
+                    config={{ responsive: true, displaylogo: false }}
                     style={{ width: '100%' }}
                   />
                 )}
@@ -557,7 +568,7 @@ export default function DashboardPage() {
             </Card>
           )}
 
-          {isAdmin && (showRawData || viewType === 'Table') && (
+          {hasFullAccess && (showRawData || viewType === 'Table') && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Raw Tabular Data</CardTitle>

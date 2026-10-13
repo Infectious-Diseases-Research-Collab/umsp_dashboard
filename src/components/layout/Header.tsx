@@ -2,16 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { BarChart3, BookOpen, Building2, Dna, Menu, LogOut } from 'lucide-react';
+import { BarChart3, BookOpen, Building2, Dna, FileText, Menu, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { MobileNav } from './MobileNav';
+import { AccessStatus } from '@/components/access/AccessStatus';
 import { createClient } from '@/lib/supabase/client';
 
 const PAGE_META: Record<string, { label: string; icon: React.ElementType }> = {
   '/dashboard/site-summary': { label: 'Site Summary', icon: Building2 },
   '/dashboard/genomic-data': { label: 'Genomic Dashboard', icon: Dna },
   '/dashboard/methods': { label: 'Malaria Indicators', icon: BookOpen },
+  '/dashboard/reports': { label: 'Reports', icon: FileText },
 };
 const DEFAULT_META = { label: 'Epi Dashboard', icon: BarChart3 };
 
@@ -72,6 +74,8 @@ export function Header() {
           {email}
         </div>
       ) : null}
+
+      <AccessStatus />
 
       <Button variant="outline" size="sm" onClick={handleSignOut} className="gap-2">
         <LogOut className="h-4 w-4" />
