@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useAccessLevel } from '@/lib/hooks/use-access-level';
 import { useSupabaseQuery } from '@/lib/hooks/use-supabase-query';
 import {
   fetchDistinctSites,
@@ -97,6 +98,17 @@ export default function DashboardPage() {
   const [siteScope, setSiteScope] = useState<SiteScope>('All Sites');
   const [viewType, setViewType] = useState<ViewType>('Map');
   const [showRawData, setShowRawData] = useState(false);
+
+  // Raw per-row data and downloads need Full access. The guard below coerces
+  // the state back rather than only hiding the controls, so a Standard user
+  // cannot land on the table via stale state.
+  const { hasFullAccess } = useAccessLevel();
+
+  useEffect(() => {
+    if (hasFullAccess) return;
+    setViewType((prev) => (prev === 'Table' ? 'Map' : prev));
+    setShowRawData(false);
+  }, [hasFullAccess]);
 
   const { data: allSites } = useSupabaseQuery(() => fetchDistinctSites());
   const { data: activeSites } = useSupabaseQuery(() => fetchMappedActiveUmspSiteNames());
@@ -356,7 +368,7 @@ export default function DashboardPage() {
         <p>Use the filters below to select sites, time period, and metric. For a full list of MRCs and their status, visit the <Link href="/dashboard/site-summary" className="font-medium text-foreground underline underline-offset-4 hover:text-foreground/70">Site Summary</Link> page.</p>
         <p><span className="font-medium text-foreground">Chart</span> view plots your metric over time for selected sites. Use the Primary and Secondary metrics to compare two indicators simultaneously.</p>
         <p><span className="font-medium text-foreground">Map</span> view shows each site&apos;s value spatially — when a time range is selected, values are averaged across all months in that range.</p>
-        <p><span className="font-medium text-foreground">Table</span> view shows the underlying monthly records.</p>
+        {hasFullAccess && <p><span className="font-medium text-foreground">Table</span> view shows the underlying monthly records.</p>}
         <p className="mt-2">For a description of each indicator and the difference between facility-level and target area data, see the <Link href="/dashboard/methods" className="font-medium text-foreground underline underline-offset-4 hover:text-foreground/70">Malaria Indicators</Link> page.</p>
       </div>
 
@@ -374,7 +386,7 @@ export default function DashboardPage() {
                 <SelectContent>
                   <SelectItem value="Chart">Chart</SelectItem>
                   <SelectItem value="Map">Map</SelectItem>
-                  <SelectItem value="Table">Tabular Data</SelectItem>
+                  {hasFullAccess && <SelectItem value="Table">Tabular Data</SelectItem>}
                 </SelectContent>
               </Select>
             </div>
@@ -467,15 +479,17 @@ export default function DashboardPage() {
               </Select>
             </div>
 
-            <div className="flex items-end gap-2">
-              <Button variant="outline" onClick={() => setShowRawData((prev) => !prev)}>
-                <TableIcon className="mr-1 h-4 w-4" />
-                {showRawData ? 'Hide Data' : 'Show Data'}
-              </Button>
-              <Button variant="outline" onClick={handleDownloadRaw}>
-                <Download className="mr-1 h-4 w-4" /> Download CSV
-              </Button>
-            </div>
+            {hasFullAccess && (
+              <div className="flex items-end gap-2">
+                <Button variant="outline" onClick={() => setShowRawData((prev) => !prev)}>
+                  <TableIcon className="mr-1 h-4 w-4" />
+                  {showRawData ? 'Hide Data' : 'Show Data'}
+                </Button>
+                <Button variant="outline" onClick={handleDownloadRaw}>
+                  <Download className="mr-1 h-4 w-4" /> Download CSV
+                </Button>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -554,7 +568,7 @@ export default function DashboardPage() {
             </Card>
           )}
 
-          {(showRawData || viewType === 'Table') && (
+          {hasFullAccess && (showRawData || viewType === 'Table') && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Raw Tabular Data</CardTitle>

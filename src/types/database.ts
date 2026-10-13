@@ -57,3 +57,29 @@ export interface DataCompleteness {
   monthyear: string;
   completeness: number;
 }
+
+export type AccessRequestStatus = 'pending' | 'approved' | 'denied';
+
+export interface AccessRequest {
+  id: number;
+  user_id: string;
+  email: string;
+  full_name: string;
+  institution: string;
+  reason: string;
+  status: AccessRequestStatus;
+  admin_note: string | null;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+}
+
+/** Row returned by the admin_list_users() SQL function. */
+export interface AdminUserRow {
+  id: string;
+  email: string;
+  role: 'standard' | 'full' | 'admin';
+  created_at: string;
+  last_sign_in_at: string | null;
+  latest_request_status: AccessRequestStatus | null;
+}

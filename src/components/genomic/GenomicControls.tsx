@@ -30,6 +30,8 @@ interface Props {
   yearMin: number;
   yearMax: number;
   onDownloadCsv: () => void;
+  /** Tabular view and CSV download need Full access; hidden for Standard users. */
+  canViewData: boolean;
 }
 
 export function GenomicControls({
@@ -39,6 +41,7 @@ export function GenomicControls({
   yearMin,
   yearMax,
   onDownloadCsv,
+  canViewData,
 }: Props) {
   const set = <K extends keyof GenomicFilters>(key: K, value: GenomicFilters[K]) =>
     onChange({ ...filters, [key]: value });
@@ -98,7 +101,7 @@ export function GenomicControls({
             <SelectContent>
               <SelectItem value="Map">Map</SelectItem>
               <SelectItem value="Chart">Chart</SelectItem>
-              <SelectItem value="Table">Tabular Data</SelectItem>
+              {canViewData && <SelectItem value="Table">Tabular Data</SelectItem>}
             </SelectContent>
           </Select>
         </div>
@@ -258,9 +261,11 @@ export function GenomicControls({
         </div>
       </div>
 
-      <div className="flex justify-end">
-        <Button variant="outline" onClick={onDownloadCsv}>Download CSV</Button>
-      </div>
+      {canViewData && (
+        <div className="flex justify-end">
+          <Button variant="outline" onClick={onDownloadCsv}>Download CSV</Button>
+        </div>
+      )}
     </div>
   );
 }

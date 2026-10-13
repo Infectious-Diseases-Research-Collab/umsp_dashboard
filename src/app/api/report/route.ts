@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import ReactPDF from '@react-pdf/renderer';
 import { ReportDocument } from './report-document';
+import { getRole, hasFullAccess } from '@/lib/auth/roles';
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,6 +10,10 @@ export async function POST(request: NextRequest) {
     const { reportType, sections } = body;
 
     const supabase = createServerSupabaseClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!hasFullAccess(getRole(user))) {
+      return NextResponse.json({ error: 'Full access required' }, { status: 403 });
+    }
 
     // Fetch data for report
     const [

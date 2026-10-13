@@ -22,7 +22,17 @@ Create `.env.local` with:
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbG...
+# Server-only. Used solely to look up admin email addresses for notifications.
+SUPABASE_SERVICE_ROLE_KEY=eyJhbG...
+# Access-request emails. Supabase's SMTP settings only serve Supabase Auth
+# emails, so copy the same values from Supabase → Authentication → Emails → SMTP.
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=...
+SMTP_PASS=...
+SMTP_FROM=UMSP Dashboard <no-reply@example.org>
 ```
+If `SMTP_HOST` is unset, emails are skipped (logged) and requests still work in-app.
 
 ## Architecture
 
@@ -30,10 +40,38 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbG...
 
 `src/middleware.ts` guards all routes server-side:
 - `/dashboard/*` and `/api/*` — require any authenticated user
-- `/admin/*` (except `/admin/login`) and `/api/upload` — require `user.app_metadata.role === 'admin'`
+- `/admin/*` (except `/admin/login`), `/api/upload` and `/api/admin/*` — require `user.app_metadata.role === 'admin'`
+- `/dashboard/reports` and `/api/report` — require Full access (`full` or `admin`)
 - Admin role is set in Supabase SQL: `UPDATE auth.users SET raw_app_meta_data = raw_app_meta_data || '{"role": "admin"}'`
 
 Supabase clients: `src/lib/supabase/client.ts` (browser) and `src/lib/supabase/server.ts` (server components/API routes).
+
+**Three access tiers**, stored in `auth.users.raw_app_meta_data.role` (`user.app_metadata.role`,
+which users cannot edit). Helpers: `src/lib/auth/roles.ts` (`getRole`, `hasFullAccess`); in
+dashboard client components use `useAccessLevel()` (context from `AccessLevelProvider` in the
+dashboard layout).
+- **Standard** (no role) — anyone can self-sign-up on `/login` (email confirmation on); charts
+  and maps only.
+- **Full** (`'full'`) — adds the tabular views, CSV downloads and `/dashboard/reports` (PDF).
+- **Admin** (`'admin'`) — Full plus uploads, `/admin/access-requests` and `/admin/users`.
+
+Standard users click "Request Full Access" in the header (`AccessStatus`), which posts to
+`POST /api/access-requests`: the row is inserted under the user's own session (RLS) and all
+admins are emailed (`src/lib/email/send.ts`, nodemailer). Admins approve/deny via
+`POST /api/admin/access-requests/[id]/review`, which calls the `review_access_request()` SQL
+function and emails the requester. `/admin/users` switches users between Standard and Full via
+`set_user_role()`. All role changes go through those admin-checked SECURITY DEFINER functions;
+the service-role key (`src/lib/supabase/admin.ts`) is only used to list admin emails.
+
+The role is read from the session JWT, which refreshes roughly hourly. `AccessLevelProvider`
+calls `refreshSession()` when it sees an approved request but a Standard token, so approvals
+apply on the next page load; downgrades apply at the next natural refresh.
+
+**The Standard/Full split is a UI gate, not a data barrier.** Both dashboards query Supabase
+from the browser, so any signed-in user can read what their charts load via devtools, and RLS
+gives every `authenticated` user `SELECT` on the data tables. This was an explicit decision (the
+data is aggregated and publicly available). What *is* enforced server-side: no `anon` access to
+any data (see `*_capture_lockdown_access.sql`), admin-only writes, and Full-only PDF reports.
 
 ### Database Schema
 
@@ -54,7 +92,9 @@ Primary tables used by the dashboard:
 
 Other tables present in the schema (not currently read by the dashboard app code, per the migration): `umsp_sites`, `active_site_umsp_site_map`, `genomic_sites_reference`, `genomic_single_locus`, `genomic_multi_locus`.
 
-All tables have RLS enabled: `SELECT` requires `authenticated`; `INSERT`/`UPDATE`/`DELETE` require `is_admin()`. Explicit GRANTs to `anon`, `authenticated`, and `service_role` are already in place (compatible with Supabase's Oct 2026 default-grants change).
+Access-control tables: **`access_requests`** (Full-access requests; at most one `pending` per user; users insert/read their own, admins read all, no direct updates) and **`page_views`** (visit log, admin-readable).
+
+All tables have RLS enabled: `SELECT` requires `authenticated`; `INSERT`/`UPDATE`/`DELETE` require `is_admin()`. Nothing in `public` is granted to `anon`. Default privileges grant new functions to `anon`, so new functions must `REVOKE ... FROM PUBLIC, anon` explicitly.
 
 ### Indicators
 
@@ -68,17 +108,23 @@ Client components use `useSupabaseQuery<T>(queryFn, deps)` from `src/lib/hooks/u
 
 | Route | Purpose |
 |---|---|
-| `/dashboard/overview` | KPI boxes, regional summary table, data quality chart |
-| `/dashboard/map` | react-leaflet map with circles, heatmap, cluster, and trend overlays |
-| `/dashboard/time-series` | Plotly line/bar charts with seasonal and trend analysis |
-| `/dashboard/data-explorer` | TanStack Table for tabular data with column selection |
-| `/dashboard/reports` | @react-pdf/renderer report config + preview; PDF served from `POST /api/report` |
+| `/dashboard` | Combined epi dashboard: Map / Chart / Tabular views in one page, with shared filters. Tabular and CSV download need Full access |
+| `/dashboard/genomic-data` | Genomic dashboard: Map (pie markers) / Chart / Tabular views, single-locus and multilocus. Tabular and CSV download need Full access |
+| `/dashboard/reports` | PDF report config + preview (Full access); PDF served from `POST /api/report` |
+| `/dashboard/methods` | Malaria Indicators reference table with definitions |
+| `/dashboard/site-summary` | Facility table plus the labelled site map image |
+| `/dashboard/map-export` | Standalone Leaflet site map; live but absent from the nav |
 | `/admin` | CSV uploader for all 3 tables; data sent to `POST /api/upload` |
+| `/admin/access-requests` | Pending / reviewed Full-access requests with approve / deny |
+| `/admin/users` | All accounts with role, latest request, sign-up and last sign-in; Standard ↔ Full switch |
 
 ### API Routes
 
 - `POST /api/upload` — parses CSV rows client-side (PapaParse), maps column names, upserts to Supabase in 500-row chunks. Supports `replace` mode (deletes all rows first) or append.
-- `POST /api/report` — fetches all data server-side, aggregates stats, renders PDF with `@react-pdf/renderer`.
+
+- `POST /api/report` — Full access only; fetches all data server-side, aggregates stats, renders PDF with `@react-pdf/renderer`.
+- `POST /api/access-requests` — any signed-in user; files a Full-access request and emails admins.
+- `POST /api/admin/access-requests/[id]/review` — admin only; `{ approve, note }`, emails the requester.
 
 ### Conventions
 

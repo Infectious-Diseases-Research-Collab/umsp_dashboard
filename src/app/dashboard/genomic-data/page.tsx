@@ -7,6 +7,7 @@ import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { GenomicControls } from '@/components/genomic/GenomicControls';
 import { GenomicChartView } from '@/components/genomic/GenomicChartView';
 import { GenomicTableView } from '@/components/genomic/GenomicTableView';
+import { useAccessLevel } from '@/lib/hooks/use-access-level';
 import { useSupabaseQuery } from '@/lib/hooks/use-supabase-query';
 import {
   fetchGenomicSites,
@@ -31,6 +32,11 @@ const DEFAULT_GENE = 'PF3D7_1343700.1'; // pfkelch13
 const DEFAULT_CODON = 675;
 
 export default function GenomicDataPage() {
+  // Raw per-row data and downloads need Full access. Coercing the filter back
+  // (rather than only hiding the option) keeps a Standard user off the table
+  // view via stale state.
+  const { hasFullAccess } = useAccessLevel();
+
   const { data: sitesData } = useSupabaseQuery(() => fetchGenomicSites());
   const { data: yearRange } = useSupabaseQuery(() => fetchGenomicYearRange());
 
@@ -67,6 +73,11 @@ export default function GenomicDataPage() {
       yearRange: [yearRange.min, yearRange.max],
     }));
   }, [yearRange]);
+
+  useEffect(() => {
+    if (hasFullAccess) return;
+    setFilters((f) => (f.view === 'Table' ? { ...f, view: 'Map' } : f));
+  }, [hasFullAccess]);
 
   const effectiveSites = filters.sites.length ? filters.sites : undefined;
 
@@ -133,8 +144,12 @@ export default function GenomicDataPage() {
           year available at each site, so pies may be from different years.
           <span className="font-medium text-foreground"> Chart</span> view plots the selected
           mutation or haplotype category over time, one line per site.
-          <span className="font-medium text-foreground"> Tabular</span> view shows the raw
-          per-population rows.
+          {hasFullAccess && (
+            <>
+              <span className="font-medium text-foreground"> Tabular</span> view shows the raw
+              per-population rows.
+            </>
+          )}
         </p>
       </div>
 
@@ -150,6 +165,7 @@ export default function GenomicDataPage() {
             yearMin={yearMin}
             yearMax={yearMax}
             onDownloadCsv={handleDownload}
+            canViewData={hasFullAccess}
           />
         </CardContent>
       </Card>
@@ -179,7 +195,7 @@ export default function GenomicDataPage() {
                 mlRows={mlRows ?? []}
               />
             )}
-            {filters.view === 'Table' && (
+            {hasFullAccess && filters.view === 'Table' && (
               <GenomicTableView
                 mode={filters.locusMode}
                 slRows={slRows ?? []}
