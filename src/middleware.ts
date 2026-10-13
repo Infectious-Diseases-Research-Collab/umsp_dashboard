@@ -53,6 +53,21 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Log every dashboard/admin page visit
+  if (user && (pathname.startsWith('/dashboard') || pathname.startsWith('/admin'))) {
+    const forwardedFor = request.headers.get('x-forwarded-for');
+    const ipAddress = forwardedFor ? forwardedFor.split(',')[0].trim() : null;
+
+    const { error } = await supabase.from('page_views').insert({
+      user_id: user.id,
+      email: user.email ?? '',
+      path: pathname,
+      ip_address: ipAddress,
+      user_agent: request.headers.get('user-agent'),
+    });
+    if (error) console.error('page_views insert failed:', error.message);
+  }
+
   // If logged in user visits /login, redirect to dashboard
   if (pathname === '/login' && user) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
